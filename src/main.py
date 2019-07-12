@@ -36,17 +36,16 @@ def progressBar(value, endvalue, bar_length=50):
 
 if __name__ == '__main__':  
     # #Variable Definition
-    modes = ['Raw', 'WaveF', 'Conv3', 'Alex1', 'Alex2', 'Alex3', 'Alex4'] #(Raw),(WaveD),(WaveF),(WaveFilters), (Conv3), (Conv98), (Alex1), (Alex2), (Alex3)
+    modes = ['Raw', 'WaveF']#, 'Conv3', 'Alex1', 'Alex2', 'Alex3', 'Alex4'] #(Raw),(WaveD),(WaveF),(WaveFilters), (Conv3), (Conv98), (Alex1), (Alex2), (Alex3)
     class_names = ['benign','malignant']
     check_grad = True
-    reps = 1
-    epch = 25
+    reps = 5
+    epch = 8
     seed = 2019
     fig = 2
     #GPU Init"""  """
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(device)
-
     LossEpoch = np.zeros((len(modes),1))
     for i in range(len(modes)):
         #Progress Bar
@@ -201,14 +200,26 @@ if __name__ == '__main__':
         
         utils.csv_save(modes[i], auc_scores)           
         
-        mean_losses = utils.calcLoss_stats(loss, modes[i], static_Fig, fig, plot_loss = True, plot_static= True)
+        mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(loss, modes[i], static_Fig, fig, plot_loss = True, plot_static= True)
         fig += 1
+
+        print("Length of Mean: " + str(len(mean_losses)))
+        print("Length of Upper: " + str(len(loss_upper)))
+        print("Length of Lower: " + str(len(loss_lower)))
 
         plt.figure(mean_fig)
         plt.plot(mean_losses)
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss (Mean Error)')
+        plt.xlabel('Epochs', fontsize=14)
+        plt.ylabel('Loss (Mean Error)', fontsize=14)
         plt.title(" Average Loss over Epochs")
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
         plt.legend(modes, loc = 'top right')
+    
+        plt.fill_between(
+            np.arange(0,epch), mean_losses - loss_lower, mean_losses + loss_upper,
+            alpha=.2, label=r'$\pm$ std.'
+            )
+
 
     plt.show()

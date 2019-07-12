@@ -2,8 +2,7 @@
 Project: Lung CT Wavelet Decomposition for Automated Nodule Categorization
 Author: axemasquelin
 Date: 10/25/2018
-
-Function Definition: 
+ 
 '''
 # Libraries and Dependencies
 # --------------------------------------------
@@ -298,8 +297,8 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
             label=r'Mean Loss'
             )
         plt.fill_between(
-            mean_loss, loss_lower, loss_upper,
-            color='grey', alpha=.4, label=r'$\pm$ std.'
+            np.arange(0,len(mean_loss)), mean_loss - loss_lower, mean_loss + loss_upper,
+            alpha=.2, label=r'$\pm$ std.'
             )
         
         plt.title(" Loss over Epochs - " + str(mode), fontsize=20)
@@ -312,8 +311,8 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
     if plot_static == True:
         plt.figure(static_fig)
         plt.fill_between(
-            mean_loss, loss_lower, loss_upper,
-            color='grey', alpha=.4, label=r'$\pm$ std.'
+            np.arange(0,len(mean_loss)), mean_loss - loss_lower, mean_loss + loss_upper,
+            alpha=.3, label=r'$\pm$ std.'
         )
         plt.title(" Loss over Epochs - All Approaches" , fontsize=20)
         plt.xlabel('Epochs', fontsize=18)
@@ -322,7 +321,7 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
         plt.yticks(fontsize=14)
         plt.legend(loc="upper right", fontsize=14)
 
-    return(mean_loss)
+    return mean_loss, loss_upper, loss_lower
 
 def csv_save(method, auc):
     ''' Save AUCs scores to a csv file '''
