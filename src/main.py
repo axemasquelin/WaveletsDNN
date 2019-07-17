@@ -36,11 +36,11 @@ def progressBar(value, endvalue, bar_length=50):
 
 if __name__ == '__main__':  
     # #Variable Definition
-    modes = ['Raw', 'WaveF']#, 'Conv3', 'Alex1', 'Alex2', 'Alex3', 'Alex4'] #(Raw),(WaveD),(WaveF),(WaveFilters), (Conv3), (Conv98), (Alex1), (Alex2), (Alex3)
+    modes = ['Raw', 'WaveF', 'Conv3', 'Alex1', 'Alex2', 'Alex3', 'Alex4'] #(Raw),(WaveD),(WaveF),(WaveFilters), (Conv3), (Conv98), (Alex1), (Alex2), (Alex3)
     class_names = ['benign','malignant']
     check_grad = True
-    reps = 5
-    epch = 8
+    reps = 20
+    epch = 100
     seed = 2019
     fig = 2
     #GPU Init"""  """
@@ -220,6 +220,5 @@ if __name__ == '__main__':
             np.arange(0,epch), mean_losses - loss_lower, mean_losses + loss_upper,
             alpha=.2, label=r'$\pm$ std.'
             )
-
 
     plt.show()
