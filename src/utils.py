@@ -44,6 +44,8 @@ def train(trainloader, testloader, net, device, epochs, mode, lrs = 0.0001, mome
         running_loss = 0.0
         end = time.time()
         for i, (inputs, labels) in enumerate(trainloader):
+            if mode == 'WaveFilters':
+                inputs = dwcfilter(inputs, wave = 'db1')
 
             #Input
             inputs = inputs.to(device)

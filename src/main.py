@@ -36,11 +36,11 @@ def progressBar(value, endvalue, bar_length=50):
 
 if __name__ == '__main__':  
     # #Variable Definition
-    modes = ['Raw', 'WaveF', 'Conv3', 'Alex1', 'Alex2', 'Alex3', 'Alex4'] #(Raw),(WaveD),(WaveF),(WaveFilters), (Conv3), (Conv98), (Alex1), (Alex2), (Alex3)
+    modes = ['Raw', 'WaveF']#, 'Conv3', 'Alex1', 'Alex2', 'Alex3', 'Alex4'] #(Raw),(WaveD),(WaveF),(WaveFilters), (Conv3), (Conv98), (Alex1), (Alex2), (Alex3)
     class_names = ['benign','malignant']
     check_grad = True
-    reps = 20
-    epch = 100
+    reps = 3
+    epch = 25
     seed = 2019
     fig = 2
     #GPU Init"""  """
@@ -67,7 +67,7 @@ if __name__ == '__main__':
             transform = transforms.Compose([transforms.Grayscale(), transforms.ToTensor()])
             net = NoConv_256()
             net.apply(utils.init_weights)
-
+            
         elif (modes[i] == 'WaveFilters'):
             transform = transforms.Compose([transforms.Grayscale(), transforms.ToTensor()])
             net = NoConv_4D()
@@ -137,7 +137,7 @@ if __name__ == '__main__':
             trainset = torchvision.datasets.ImageFolder(TrainPath, transform = transform)
             trainloader = torch.utils.data.DataLoader(trainset, batch_size= 25, shuffle= True)
             testset = torchvision.datasets.ImageFolder(TestPath, transform = transform)
-            testloader = torch.utils.data.DataLoader(testset,  shuffle= True)
+            testloader = torch.utils.data.DataLoader(testset, batch_size= 25,  shuffle= True)
             classes = (0,1) #('noncancerous', 'cancerous')
             
             if (modes[i] == 'Raw'):
@@ -168,7 +168,7 @@ if __name__ == '__main__':
             
             fprs.append(fp), tprs.append(tp), 
 
-            net.apply(utils.weight_reset)
+            net.apply(utils.init_weights)
     
             class_names = ["Malignant", "Benign"]
             plt.figure(fig)

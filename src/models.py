@@ -99,7 +99,7 @@ class NoConv_256(nn.Module):
         super(NoConv_256, self).__init__()
         self.classifier = nn.Sequential(
             nn.Dropout(),
-            nn.Linear(1*256*256, 100),
+            nn.Linear(1*128*128, 100),
             nn.ReLU(inplace=True),
             nn.Dropout(),
             nn.Linear(100, 20),
@@ -108,7 +108,7 @@ class NoConv_256(nn.Module):
         )
 
     def forward(self, x):
-        x = x.view(-1, 1*256*256)
+        x = x.view(-1, 1*128*128)
         #x = x.log() #Usually found after classifier to try to stabilize unstable systems
         x = self.classifier(x)
         return x
