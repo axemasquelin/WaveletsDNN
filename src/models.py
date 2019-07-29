@@ -21,12 +21,12 @@ class NoConv_4D(nn.Module):
         super(NoConv_4D, self).__init__()
         self.classifier = nn.Sequential(
             nn.Dropout(),
-            nn.Linear(4*128*128, 500), #4096
+            nn.Linear(4*128*128, 100), #4096
             nn.ReLU(inplace=True),
             nn.Dropout(),
-            nn.Linear(500, 100), #4096,1000
+            nn.Linear(100, 20), #4096,1000
             nn.ReLU(inplace=True),
-            nn.Linear(100, 2), #1000,2
+            nn.Linear(20, 2), #1000,2
         )
 
     def forward(self, x):
@@ -123,10 +123,10 @@ class alexnet_conv1(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((128, 128))
         self.classifier = nn.Sequential(
             nn.Dropout(0.5),
-            nn.Linear(64*128*128, 100),
+            nn.Linear(64*128*128, 300),
             nn.ReLU(inplace=True),
             nn.Dropout(),
-            nn.Linear(100, 20),
+            nn.Linear(300, 20),
             nn.ReLU(inplace=True),
             nn.Linear(20, 2),
         )
@@ -192,10 +192,10 @@ class alexnet_conv4(nn.Module):
         net = torchvision.models.alexnet(pretrained = True)
 
         self.features = nn.Sequential(*[net.features[i] for i in range(10)])
-        self.avgpool = nn.AdaptiveAvgPool2d((64, 64))
+        self.avgpool = nn.AdaptiveAvgPool2d((32, 32))
         self.classifier = nn.Sequential(
             nn.Dropout(0.5),
-            nn.Linear(256*64*64, 100),
+            nn.Linear(256*32*32, 100),
             nn.ReLU(inplace=True),
             nn.Dropout(0.5),
             nn.Linear(100, 20),
@@ -205,7 +205,7 @@ class alexnet_conv4(nn.Module):
     def forward(self, x):
         x = self.features(x)
         x = self.avgpool(x)
-        x = x.view(x.size(0), 256*64*64)
+        x = x.view(x.size(0), 256*32*32)
         x = self.classifier(x)
         return x
 
@@ -216,10 +216,10 @@ class alexnet(nn.Module):
         net = torchvision.models.alexnet(pretrained = True)
 
         self.features = net.features
-        self.avgpool = nn.AdaptiveAvgPool2d((128, 128))
+        self.avgpool = nn.AdaptiveAvgPool2d((6, 6))
         self.classifier = nn.Sequential(
             nn.Dropout(0.5),
-            nn.Linear(192*128*128, 100),
+            nn.Linear(256*6*6, 100),
             nn.ReLU(inplace=True),
             nn.Dropout(0.5),
             nn.Linear(100, 20),
@@ -229,6 +229,6 @@ class alexnet(nn.Module):
     def forward(self, x):
         x = self.features(x)
         x = self.avgpool(x)
-        x = x.view(x.size(0), 192*128*128)
+        x = x.view(x.size(0), 256*6*6)
         x = self.classifier(x)
         return x

@@ -65,6 +65,7 @@ def wavelet(npImages, mode):
             imgScale = np.concatenate((temp1, temp2), axis = 0)
             initflag = 0
     
+    cv2.imshow('Image', imgScale)
     return(imgScale*10)
 
 def CT_Slicer(numpyImage, patientID, studyID, lesionType):
@@ -142,12 +143,12 @@ def CT_Slicer(numpyImage, patientID, studyID, lesionType):
             xSliceName = G0_Noncancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'xSlice' + '_' + str(classification) + '.jpg'
             ySliceName = G0_Noncancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'ySlice' + '_' + str(classification) + '.jpg'
             zSliceName = G0_Noncancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'zSlice' + '_' + str(classification) + '.jpg'
-            cv2.imwrite(xWaveName, Xwavelet)
-            cv2.imwrite(yWaveName, Ywavelet)
-            cv2.imwrite(zWaveName, Zwavelet)
-            cv2.imwrite(xSliceName, Xslice)
-            cv2.imwrite(ySliceName, Yslice)
-            cv2.imwrite(zSliceName, Zslice)
+            # cv2.imwrite(xWaveName, Xwavelet)
+            # cv2.imwrite(yWaveName, Ywavelet)
+            # cv2.imwrite(zWaveName, Zwavelet)
+            # cv2.imwrite(xSliceName, Xslice)
+            # cv2.imwrite(ySliceName, Yslice)
+            # cv2.imwrite(zSliceName, Zslice)
         else:
             xWaveName = WaveG0_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'xWaveSlice' + '_' + str(classification) + '.jpg'
             yWaveName = WaveG0_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'yWaveSlice' + '_' + str(classification) + '.jpg'
@@ -155,12 +156,12 @@ def CT_Slicer(numpyImage, patientID, studyID, lesionType):
             xSliceName = G0_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'xSlice' + '_' + str(classification) + '.jpg'
             ySliceName = G0_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'ySlice' + '_' + str(classification) + '.jpg'
             zSliceName = G0_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'zSlice' + '_' + str(classification) + '.jpg'
-            cv2.imwrite(xWaveName, Xwavelet)
-            cv2.imwrite(yWaveName, Ywavelet)
-            cv2.imwrite(zWaveName, Zwavelet)
-            cv2.imwrite(xSliceName, Xslice)
-            cv2.imwrite(ySliceName, Yslice)
-            cv2.imwrite(zSliceName, Zslice)
+            # cv2.imwrite(xWaveName, Xwavelet)
+            # cv2.imwrite(yWaveName, Ywavelet)
+            # cv2.imwrite(zWaveName, Zwavelet)
+            # cv2.imwrite(xSliceName, Xslice)
+            # cv2.imwrite(ySliceName, Yslice)
+            # cv2.imwrite(zSliceName, Zslice)
 
     else:
         if classification == str(0):
@@ -170,12 +171,12 @@ def CT_Slicer(numpyImage, patientID, studyID, lesionType):
             xSliceName = G1_Noncancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'xSlice' + '_' + str(classification) + '.jpg'
             ySliceName = G1_Noncancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'ySlice' + '_' + str(classification) + '.jpg'
             zSliceName = G1_Noncancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'zSlice' + '_' + str(classification) + '.jpg'
-            cv2.imwrite(xWaveName, Xwavelet)
-            cv2.imwrite(yWaveName, Ywavelet)
-            cv2.imwrite(zWaveName, Zwavelet)
-            cv2.imwrite(xSliceName, Xslice)
-            cv2.imwrite(ySliceName, Yslice)
-            cv2.imwrite(zSliceName, Zslice)
+            # cv2.imwrite(xWaveName, Xwavelet)
+            # cv2.imwrite(yWaveName, Ywavelet)
+            # cv2.imwrite(zWaveName, Zwavelet)
+            # cv2.imwrite(xSliceName, Xslice)
+            # cv2.imwrite(ySliceName, Yslice)
+            # cv2.imwrite(zSliceName, Zslice)
         else:
             xWaveName = WaveG1_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'xWaveSlice' + '_' + str(classification) + '.jpg'
             yWaveName = WaveG1_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'yWaveSlice' + '_' + str(classification) + '.jpg'
@@ -183,12 +184,12 @@ def CT_Slicer(numpyImage, patientID, studyID, lesionType):
             xSliceName = G1_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'xSlice' + '_' + str(classification) + '.jpg'
             ySliceName = G1_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'ySlice' + '_' + str(classification) + '.jpg'
             zSliceName = G1_Cancerous + '/' + str(patientID) + '_' + str(studyID) + '_' + str(lesionType) + '_' + 'zSlice' + '_' + str(classification) + '.jpg'
-            cv2.imwrite(xWaveName, Xwavelet)
-            cv2.imwrite(yWaveName, Ywavelet)
-            cv2.imwrite(zWaveName, Zwavelet)
-            cv2.imwrite(xSliceName, Xslice)
-            cv2.imwrite(ySliceName, Yslice)
-            cv2.imwrite(zSliceName, Zslice)
+            # cv2.imwrite(xWaveName, Xwavelet)
+            # cv2.imwrite(yWaveName, Ywavelet)
+            # cv2.imwrite(zWaveName, Zwavelet)
+            # cv2.imwrite(xSliceName, Xslice)
+            # cv2.imwrite(ySliceName, Yslice)
+            # cv2.imwrite(zSliceName, Zslice)
             
 
     return()
@@ -273,22 +274,22 @@ for image in ImageNames:
 
             '''Save Image'''
             classification, groupID = csvReader(patientID)
-            if (groupID == str(0)):
-                '''Group 00'''
-                if classification == str(0):
-                    ImgName = WholeCT_G0_Noncancerous + '/' + filename + '.jpg'
-                    cv2.imwrite(ImgName, grayImage)
-                else:
-                    ImgName = WholeCT_G0_Cancerous + '/' + filename + '.jpg'
-                    cv2.imwrite(ImgName, grayImage)
-            else:
-                '''Group 01'''
-                if classification  == str(0):
-                    ImgName = WholeCT_G1_Noncancerous + '/' + filename + '.jpg'
-                    cv2.imwrite(ImgName, grayImage)
-                else:
-                    ImgName = WholeCT_G1_Cancerous + '/' + filename + '.jpg'
-                    cv2.imwrite(ImgName, grayImage)
+            # if (groupID == str(0)):
+            #     '''Group 00'''
+            #     if classification == str(0):
+            #         ImgName = WholeCT_G0_Noncancerous + '/' + filename + '.jpg'
+            #         cv2.imwrite(ImgName, grayImage)
+            #     else:
+            #         ImgName = WholeCT_G0_Cancerous + '/' + filename + '.jpg'
+            #         cv2.imwrite(ImgName, grayImage)
+            # else:
+            #     '''Group 01'''
+            #     if classification  == str(0):
+            #         ImgName = WholeCT_G1_Noncancerous + '/' + filename + '.jpg'
+            #         cv2.imwrite(ImgName, grayImage)
+            #     else:
+            #         ImgName = WholeCT_G1_Cancerous + '/' + filename + '.jpg'
+            #         cv2.imwrite(ImgName, grayImage)
 
     except Exception as err:
         print('Error: ', err)

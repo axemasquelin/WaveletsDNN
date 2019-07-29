@@ -7,7 +7,7 @@ Date: 10/25/2018
 # Libraries and Dependencies
 # --------------------------------------------
 from sklearn.metrics import roc_curve, auc, confusion_matrix
-from preprocessing import dwcoeff, dwdec, dwcfilter
+from preprocessing import *
 from torch.utils import data
 
 import torchvision.transforms as transforms
@@ -46,7 +46,8 @@ def train(trainloader, testloader, net, device, epochs, mode, lrs = 0.0001, mome
         for i, (inputs, labels) in enumerate(trainloader):
             if mode == 'WaveFilters':
                 inputs = dwcfilter(inputs, wave = 'db1')
-
+                #inputs = dwdec(inputs, wave = 'db1')
+        
             #Input
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -91,6 +92,10 @@ def validate(testloader, criterion, net, device, mode):
         prediction = np.transpose(np.zeros(len(testloader)))
         running_loss = 0 
         for i, (images, labels) in enumerate(testloader):
+            if mode == 'WaveFilters':
+                images = dwcfilter(images, wave = 'db1')
+                #images = dwdec(images, wave = 'db1')
+
             #Load Images
             images, labels = images.to(device), labels.to(device)
             input_var = torch.autograd.Variable(images)
@@ -117,8 +122,12 @@ def test(testloader, net, device, mode = 3):
         targets = np.zeros(len(testloader))
         prediction = np.transpose(np.zeros(len(testloader)))
         count = 0
-        for (images, labels) in testloader:            
+        for (images, labels) in testloader:
+            if mode == 'WaveFilters':
+                images = dwcfilter(images, wave = 'db1')
+                #images = dwdec(images, wave = 'db1')            
             images, labels = images.to(device), labels.to(device)
+            
             if mode == 'Conv3':
                 outputs, fils = net(images)
                 raw = images[0].cpu().detach().numpy()

@@ -18,14 +18,23 @@ import glob, cv2, os
 ####################################
 
 '''Normalize Grayscale'''
-def normalizePlanes(nparray):
-    maxHU = np.max(nparray) 
-    minHU = np.min(nparray)
-    
-    nparray = (nparray - minHU) / (maxHU - minHU)
-    nparray[nparray>1] = 1
-    nparray[nparray<0] = 0
-    return nparray
+def normalizePlanes(loader):
+    nparray = loader.data.cpu().numpy()
+    data = np.zeros((len(loader), 1, 224, 224))
+
+    for i in range(len(loader)):
+        maxHU = np.max(nparray[i]) 
+        minHU = np.min(nparray[i])
+        
+        norm = (nparray - minHU) / (maxHU - minHU)
+        norm[norm>1] = 1
+        norm[norm<0] = 0
+        data[i][0][:][:] = norm
+    data = np.asarray(data)
+    data = torch.from_numpy(data)
+    data = data.type(torch.FloatTensor)
+
+    return data
 
 
 '''Discrete Wavelet Deconstruction'''
@@ -44,8 +53,8 @@ def dwcoeff (loader, wave):
         
         LL_arr[i][0][:][:] = bp
 
-        # cv2.imshow('db1', LL_arr[i][0][:][:])
-        # cv2.waitKey(0)
+        cv2.imshow('db1', bp)
+        cv2.waitKey(0)
         
 
     data = np.asarray(LL_arr)
@@ -55,36 +64,41 @@ def dwcoeff (loader, wave):
 
 '''Discrete Wavelet Deconstruction Scalogram'''
 def dwdec (loader, wave):
-    shape = (256, 256)
-    max_lev = 5
+    shape = (128, 128)
     numparr = loader.data.cpu().numpy()
-    WaveDec = np.zeros((len(loader), 1, 256, 256), dtype = float)
+    WaveDec = np.zeros((len(loader), 1, 128, 128), dtype = float)
      
     for i in range(len(loader)):
         initflag = 1
-        cv2.imshow('Original', numparr[i][0])
+        # cv2.imshow('Original', numparr[i][0])
+        levels = pywt.dwt_max_level(data_len = 256, filter_len = wave)
+        # print('Levels: ' + str(levels))
         coeffs = pywt.wavedec2(numparr[i], wave)
+        # print("Coeffs Levels: " + str(len(coeffs)))
+        # cv2.waitKey(0)
         
-        for n in range(len(coeffs)-1):
-            print()
-            print("Coeffs @" + str(n) + " " + str(coeffs[n]))
+        for n in range(len(coeffs)-2):
+            # print(n)
+            # print("Coeffs @" + str(n) + " " + str(coeffs[n]))
             if initflag == 0:
                 temp1 = np.concatenate((imgScale, coeffs[n+1][0][0]), axis = 1)
                 temp2 = np.concatenate((coeffs[n+1][1][0], coeffs[n+1][2][0]), axis = 1)
-                print("Temp 1: " + str(temp1))
-                print("Temp 2: " + str(temp2))
+                # print("Temp 1: " + str(temp1))
+                # print("Temp 2: " + str(temp2))
                 imgScale = np.concatenate((temp1, temp2), axis = 0)
                 
             else:
                 temp1 = np.concatenate((coeffs[n][0], coeffs[n+1][0][0]), axis = 1)
                 temp2 = np.concatenate((coeffs[n+1][1][0], coeffs[n+1][2][0]), axis = 1)
-                print("Temp 1: " + str(temp1))
-                print("Temp 2: " + str(temp2))
+                # print("Temp 1: " + str(temp1))
+                # print("Temp 2: " + str(temp2))
                 imgScale = np.concatenate((temp1, temp2), axis = 0)
                 initflag = 0
 
         WaveDec[i][:][:][:] = imgScale
-        
+    
+    # cv2.imshow('Wave', imgScale)
+    # cv2.waitKey(0)
 
 
     data = np.asarray(WaveDec)
@@ -106,8 +120,10 @@ def dwcfilter (loader, wave):
         coeffs = pywt.dwt2(numparr[i], wave)
         LL, (LH, HL, HH) = coeffs
         LL = np.concatenate((LL,LH,HL,HH), axis = 0)
-        
+        # cv2.imshow("LL", LL)
+        # cv2.waitKey(0)
         LL_arr[i][:][:][:] = LL
+        
 
     data = np.asarray(LL_arr)
     data = torch.from_numpy(data)
