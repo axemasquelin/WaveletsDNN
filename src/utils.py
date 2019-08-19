@@ -7,7 +7,6 @@ Date: 10/25/2018
 # Libraries and Dependencies
 # --------------------------------------------
 from sklearn.metrics import roc_curve, auc, confusion_matrix
-from preprocessing import *
 from torch.utils import data
 
 import torchvision.transforms as transforms
@@ -29,141 +28,14 @@ import time
 import cv2, os
 # --------------------------------------------
 
-def train(trainloader, testloader, net, device, epochs, mode, lrs = 0.0001, moment = 0.99):
-    
-    criterion = nn.CrossEntropyLoss().cuda()
-    # optimizer = optim.SGD(net.parameters(), lr= lrs, momentum= moment)
-    optimizer = optim.Adam(net.parameters(), lr = lrs, betas=(0.9, 0.999), eps= 1e-8)
-    #Need to change optimizer
-    #lossCrit = []
-    trainLoss = np.zeros((epochs))
-    validLoss = np.zeros((epochs))
-
-    for epoch in range(epochs):  # loop over the dataset multiple times
-        EpochTime = 0
-        running_loss = 0.0
-        end = time.time()
-        for i, (inputs, labels) in enumerate(trainloader):
-            if mode == 'WaveFilters':
-                inputs = dwcfilter(inputs, wave = 'db1')
-                #inputs = dwdec(inputs, wave = 'db1')
-        
-            #Input
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-            input_var = torch.autograd.Variable(inputs)
-            target_var = torch.autograd.Variable(labels)
-
-            #Outputs
-            if  mode == 'Conv3':
-                output, fils = net(input_var)
-            else:
-                output = net(input_var)
-
-            loss = criterion(output, target_var)
-
-            #Gradient Descent
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            running_loss += loss.item()
-        
-        
-
-
-        EpochTime += (time.time() - end)
-        print('[%d, %5d] Running loss: %.5f| Epoch Time: %.3f' %
-                (epoch + 1, i + 1, running_loss/i, EpochTime))
-        #lossCrit.append(running_loss/i)
-        trainLoss[epoch] = running_loss/i
-        validLoss[epoch] = validate(testloader, criterion, net, device, mode)
-        
-        running_loss = 0.0
-        # if flag == 0:
-        #     if (((lossCrit[epoch]- lossCrit[epoch-1])/lossCrit[epoch-1]) <= 0.1):
-        #         lepoch = epoch + 1
-        #         flag = 1            
-
-    return trainLoss, validLoss
-
-def validate(testloader, criterion, net, device, mode):
-    with torch.no_grad():
-        targets = np.zeros(len(testloader))
-        prediction = np.transpose(np.zeros(len(testloader)))
-        running_loss = 0 
-        for i, (images, labels) in enumerate(testloader):
-            if mode == 'WaveFilters':
-                images = dwcfilter(images, wave = 'db1')
-                #images = dwdec(images, wave = 'db1')
-
-            #Load Images
-            images, labels = images.to(device), labels.to(device)
-            input_var = torch.autograd.Variable(images)
-            target_var = torch.autograd.Variable(labels)
-            
-            #Input Images to Network
-            if  mode == 'Conv3':
-                output, fils = net(input_var)
-            else:
-                output = net(input_var)
-
-            #Loss of Network
-            loss = criterion(output, target_var)
-            running_loss += loss.item()
-
-    return (running_loss/i)
-
-def test(testloader, net, device, mode = 3):
-    correct = 0
-    total = 0
-    
-    with torch.no_grad():
-        # fprs, tprs = [], []
-        targets = np.zeros(len(testloader))
-        prediction = np.transpose(np.zeros(len(testloader)))
-        count = 0
-        for (images, labels) in testloader:
-            if mode == 'WaveFilters':
-                images = dwcfilter(images, wave = 'db1')
-                #images = dwdec(images, wave = 'db1')            
-            images, labels = images.to(device), labels.to(device)
-            
-            if mode == 'Conv3':
-                outputs, fils = net(images)
-                raw = images[0].cpu().detach().numpy()
-            else:
-                outputs = net(images)
-                fils = 0
-                raw = 0
-
-            _, pred = torch.max(outputs, 1)
-
-            total += labels.size(0)
-            correct += (pred == labels).sum().item()
-
-            targets[count] = labels.cpu().squeeze().numpy()
-            prediction[count] = pred.cpu().squeeze().numpy()
-
-            count += labels.size(0)
-        acc = (100 * correct/total)
-        print('Accuracy of Network: %d %%' %acc)
-
-        fp, tp, threshold = roc_curve(targets, prediction[:])
-        print('FP: ' + str(fp))
-        print('TP: ' + str(tp))
-        
-        conf_matrix = confusion_matrix(prediction, targets)
-    
-    return (
-        conf_matrix,
-        fp,
-        tp,
-        fils,
-        raw
-    )
+def adjust_lr(optimizer, lrs, epoch):
+    lr = lrs * (0.1 ** (epoch // 20))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
 
 def init_weights(m):
     '''Initializes Model Weights using Xavier Uniform Function'''
+    np.random.seed(2019)
     if type(m) == nn.Linear:
         torch.nn.init.xavier_uniform(m.weight)
         m.bias.data.fill_(0.01)
@@ -209,6 +81,28 @@ def calcAuc (fps, tps, mode, reps, plot_roc = True):
         
     return aucs
 
+def plot_losses(fig, trainLoss, validLoss, mode):
+    plt.figure(fig)
+    plt.plot(trainLoss)
+    plt.plot(validLoss)
+    plt.title('Loss over Epochs ' + str(mode))
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss (Mean Error)')
+    plt.legend(['Training','Validation'], loc = 'top right')
+    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '_ValidationLoss.png', dpi = 100)
+    plt.close()
+
+def plot_accuracies(fig, trainAcc, validAcc, mode):
+    plt.figure(fig)
+    plt.plot(trainAcc)
+    plt.plot(validAcc)
+    plt.title('Accuracies over Epochs ' + str(mode))
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend(['Training','Validation'], loc = 'top right')
+    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '_ValidationAccuracies.png', dpi = 100)
+    plt.close()
+
 
 def plot_roc_curve(tprs, mean_fpr, mean_tpr, mean_auc, std_auc, reps, mode):
     ''' Plot roc curve per fold and mean/std score of all runs '''
@@ -237,12 +131,16 @@ def plot_roc_curve(tprs, mean_fpr, mean_tpr, mean_auc, std_auc, reps, mode):
     plt.yticks(fontsize=14)
     plt.title('ROC Curve for ' + str(mode), fontsize=20)
     plt.legend(loc="lower right", fontsize=14)
+    savepath = os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '_ROC.png'
+    plt.savefig(savepath, dpi=100)
+    plt.close()
 
 
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
+                          saveFlag = False,
                           cmap=plt.cm.Blues):
     """
     This function prints and plots the confusion matrix.
@@ -273,6 +171,8 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
+
+    
 
 
 def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static = False):
@@ -308,7 +208,7 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
             label=r'Mean Loss'
             )
         plt.fill_between(
-            np.arange(0,len(mean_loss)), mean_loss - loss_lower, mean_loss + loss_upper,
+            np.arange(0,len(mean_loss)), loss_lower, loss_upper,
             alpha=.2, label=r'$\pm$ std.'
             )
         
@@ -322,7 +222,7 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
     if plot_static == True:
         plt.figure(static_fig)
         plt.fill_between(
-            np.arange(0,len(mean_loss)), mean_loss - loss_lower, mean_loss + loss_upper,
+            np.arange(0,len(mean_loss)), loss_lower, loss_upper,
             alpha=.3, label=r'$\pm$ std.'
         )
         plt.title(" Loss over Epochs - All Approaches" , fontsize=20)

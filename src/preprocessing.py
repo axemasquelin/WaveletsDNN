@@ -20,16 +20,18 @@ import glob, cv2, os
 '''Normalize Grayscale'''
 def normalizePlanes(loader):
     nparray = loader.data.cpu().numpy()
-    data = np.zeros((len(loader), 1, 224, 224))
+    data = np.zeros((len(loader), 1, 128, 128))
 
     for i in range(len(loader)):
         maxHU = np.max(nparray[i]) 
         minHU = np.min(nparray[i])
         
-        norm = (nparray - minHU) / (maxHU - minHU)
+        norm = (nparray[i] - minHU) / (maxHU - minHU)
         norm[norm>1] = 1
         norm[norm<0] = 0
+        
         data[i][0][:][:] = norm
+    
     data = np.asarray(data)
     data = torch.from_numpy(data)
     data = data.type(torch.FloatTensor)
@@ -77,7 +79,7 @@ def dwdec (loader, wave):
         # print("Coeffs Levels: " + str(len(coeffs)))
         # cv2.waitKey(0)
         
-        for n in range(len(coeffs)-2):
+        for n in range(len(coeffs)-1):
             # print(n)
             # print("Coeffs @" + str(n) + " " + str(coeffs[n]))
             if initflag == 0:
@@ -113,11 +115,13 @@ def dwcfilter (loader, wave):
     
     numparr = loader.data.cpu().numpy()
     
-    LL_arr = np.zeros((len(loader), 4, 128,128))
+    LL_arr = np.zeros((len(loader), 4, 64, 64))
     for i in range(len(loader)):   
         random = []
         imageShow = []
         coeffs = pywt.dwt2(numparr[i], wave)
+        LL, (LH, HL, HH) = coeffs
+        coeffs = pywt.dwt2(LL, wave)
         LL, (LH, HL, HH) = coeffs
         LL = np.concatenate((LL,LH,HL,HH), axis = 0)
         # cv2.imshow("LL", LL)
