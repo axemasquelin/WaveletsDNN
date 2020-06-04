@@ -1,11 +1,12 @@
+# coding: utf-8
+""" MIT License """
 '''
-Project: Lung CT Wavelet Decomposition for Automated Nodule Categorization
-Author: axemasquelin
-Date: 10/25/2018
- 
+    Project: Wavelet DNN
+    Authors: Axel Masquelin
+    Description:
 '''
-# Libraries and Dependencies
-# --------------------------------------------
+# Libraries
+# ---------------------------------------------------------------------------- #
 from sklearn.metrics import roc_curve, auc, confusion_matrix
 from torch.utils import data
 
@@ -26,10 +27,27 @@ import random
 import math
 import time
 import cv2, os
-# --------------------------------------------
+# ---------------------------------------------------------------------------- #
+
+def tensor_cat(x2, x3, x5):
+    '''Concatenate Different Size Features, zero padding to match size ''' 
+    print(x2.size())
+    print(x3.size())
+    print(x5.size())
+
+    x3pad = F.pad(input = x3, pad=(1,1,1,1), mode = 'constant', value = 0)
+    print(x3pad.size())
+
+    x5pad = F.pad(input = x5, pad=(1,1,1,1), mode = 'constant', value = 0)
+    print(x5pad.size())
+    
+    xcat = torch.cat((x2,x3),0)
+    xcat = torch.cat((xcat, x5), 0)
+
+    return xcat
 
 def adjust_lr(optimizer, lrs, epoch):
-    lr = lrs * (0.1 ** (epoch // 20))
+    lr = lrs * (0.01 ** (epoch // 20))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
@@ -50,6 +68,7 @@ def set_parameter_requires_grad(model, feature_extracting = False):
     if feature_extracting:
         for param in model.parameters():
             param.requires_grad = False
+
 
 def calcAuc (fps, tps, mode, reps, plot_roc = True):
     ''' Calculate mean ROC/AUC for a given set of 
@@ -81,6 +100,7 @@ def calcAuc (fps, tps, mode, reps, plot_roc = True):
         
     return aucs
 
+
 def plot_losses(fig, trainLoss, validLoss, mode):
     plt.figure(fig)
     plt.plot(trainLoss)
@@ -89,8 +109,11 @@ def plot_losses(fig, trainLoss, validLoss, mode):
     plt.xlabel('Epochs')
     plt.ylabel('Loss (Mean Error)')
     plt.legend(['Training','Validation'], loc = 'top right')
-    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '_ValidationLoss.png', dpi = 100)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_Loss.png', dpi = 100)
     plt.close()
+
 
 def plot_accuracies(fig, trainAcc, validAcc, mode):
     plt.figure(fig)
@@ -100,7 +123,10 @@ def plot_accuracies(fig, trainAcc, validAcc, mode):
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend(['Training','Validation'], loc = 'top right')
-    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '_ValidationAccuracies.png', dpi = 100)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    
+    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_Accuracies.png', dpi = 100)
     plt.close()
 
 
@@ -129,15 +155,16 @@ def plot_roc_curve(tprs, mean_fpr, mean_tpr, mean_auc, std_auc, reps, mode):
     plt.ylabel('True Positive Rate', fontsize=18)
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
-    plt.title('ROC Curve for ' + str(mode), fontsize=20)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.title('ROC Curve for ' + str(mode), fontsize=16)
     plt.legend(loc="lower right", fontsize=14)
-    savepath = os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '_ROC.png'
+    savepath = os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_ROC.png'
     plt.savefig(savepath, dpi=100)
     plt.close()
 
 
-
-def plot_confusion_matrix(cm, classes,
+def plot_confusion_matrix(cm, classes, r, model,
                           normalize=False,
                           title='Confusion matrix',
                           saveFlag = False,
@@ -154,10 +181,11 @@ def plot_confusion_matrix(cm, classes,
 
     print(cm)
 
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
     tick_marks = np.arange(len(classes))
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+  
+    plt.colorbar()
+
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
 
@@ -168,11 +196,14 @@ def plot_confusion_matrix(cm, classes,
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
+    plt.title(title)
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
-
-    
+    savepath = os.path.split(os.getcwd())[0] + '/results/' + str(model) + '/' + str(model) + "_CM_" + 'repetition_' + str(r) + '.png'
+    plt.savefig(savepath)
+    plt.close()
+  
 
 
 def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static = False):
@@ -217,6 +248,8 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
         plt.ylabel('Loss', fontsize=18)
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
         plt.legend(loc="upper right", fontsize=14)
 
     if plot_static == True:
@@ -230,6 +263,8 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
         plt.ylabel('Loss', fontsize=18)
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
         plt.legend(loc="upper right", fontsize=14)
 
     return mean_loss, loss_upper, loss_lower
@@ -239,7 +274,7 @@ def csv_save(method, auc):
 
     cols = ['AUC'+str(i+1) for i in range(auc.shape[1])]
     logs = pd.DataFrame(auc, columns=cols)    
-    pth_to_save =  os.path.split(os.getcwd())[0] + "/results/" + method +  "_aucs.csv"
+    pth_to_save =  os.path.split(os.getcwd())[0] + "/results/" + method + '/' + method +  "_aucs.csv"
     logs.to_csv(pth_to_save)
 
     print(logs)

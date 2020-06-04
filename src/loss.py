@@ -1,11 +1,9 @@
 # coding: utf-8
-
 '''
-    Project: Lung Cancer Wavelet Neural Network
-    Date: 19/12/2018
-    Axel Masquelin
+    Project: Wavelet DNN
+    Authors: Axel Masquelin
+    Description:
 '''
-
 # libraries and dependencies
 # --------------------------------------------
 import torch
@@ -24,7 +22,7 @@ def one_hot_embedding(labels, num_classes):
     '''
     y = torch.eye(num_classes)  # [D,D]
     return y[labels]            # [N,D]
-
+    
 def one_hot(index, classes):
     size = index.size() + (classes,)
     view = index.size() + (1,)
