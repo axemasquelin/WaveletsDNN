@@ -31,19 +31,19 @@ import cv2, os
 
 def tensor_cat(x2, x3, x5):
     '''Concatenate Different Size Features, zero padding to match size ''' 
-    print(x2.size())
-    print(x3.size())
-    print(x5.size())
+    # print(x2.size())
+    # print(x3.size())
+    # print(x5.size())
 
-    x3pad = F.pad(input = x3, pad=(1,1,1,1), mode = 'constant', value = 0)
-    print(x3pad.size())
+    x3pad = F.pad(input = x3, pad=(8,8,8,8), mode = 'constant', value = 0)
+    # print(x3pad.size())
 
-    x5pad = F.pad(input = x5, pad=(1,1,1,1), mode = 'constant', value = 0)
-    print(x5pad.size())
+    x5pad = F.pad(input = x5, pad=(12,12,12,12), mode = 'constant', value = 0)
+    # print(x5pad.size())
     
-    xcat = torch.cat((x2,x3),0)
-    xcat = torch.cat((xcat, x5), 0)
-
+    xcat = torch.cat((x2,x3pad),1)
+    xcat = torch.cat((xcat, x5pad), 1)
+    # print(xcat.size())
     return xcat
 
 def adjust_lr(optimizer, lrs, epoch):
