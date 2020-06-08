@@ -167,10 +167,10 @@ if __name__ == '__main__':
 
     # Network Parameters
     models = [
-            # 'Wave1',            # Single Level Wavelet Decomposition Layer extracting 4 features
-            # 'Conv1',            # Convolutional Layer 4 Feature Extracted
-            'inception_wave',   # Multi Level Wavelet Decomposition
-            'inception_conv',   # Multiscale Convolutional Module.
+            'Wave1',            # Single Level Wavelet Decomposition Layer extracting 4 features
+            'Conv1',            # Convolutional Layer 4 Feature Extracted
+            # 'inception_wave',   # Multi Level Wavelet Decomposition
+            # 'inception_conv',   # Multiscale Convolutional Module.
             # 'AlexNet',         # Standard Alexnet Architecture with modified classifier
             # 'WalexNet',        # Wavelet Alexnet Architecture
             

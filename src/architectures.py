@@ -122,9 +122,9 @@ class Conv_1 (nn.Module):
         
         super(Conv_1, self).__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 7, stride= 1, padding = 4),
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0),
             nn.ReLU(inplace = True),
-            nn.MaxPool2d(kernel_size = 3, stride = 2),
+            # nn.MaxPool2d(kernel_size = 3, stride = 2),
         )
 
         self.avgpool = nn.AdaptiveAvgPool2d((6,6))        
