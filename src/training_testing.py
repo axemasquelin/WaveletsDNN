@@ -79,7 +79,7 @@ def train(trainloader, testloader, net, device, rep, opt, model):
 
         end = time.time()
         for i, (images, labels) in enumerate(trainloader):
-            
+            # print(images.size())
             # Input
             images = images.to(device)
             labels = labels.to(device)
