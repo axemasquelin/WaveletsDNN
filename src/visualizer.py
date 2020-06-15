@@ -34,11 +34,16 @@ def dwcfilter (numparr, m, wave):
 
     coeffs = pywt.dwt2(numparr, wave)
     LL, (LH, HL, HH) = coeffs
+    cv2.imshow('LL', LL[0])    
+
+    plt.show()
 
     if (m + 1 > 1): 
         for i in range(m):
             coeffs = pywt.dwt2(LL, wave)
             LL, (LH, HL, HH) = coeffs
+
+            
 
     if (m < levels - 1):
         plot_3dmesh(LL, norm = "Wavelet LL " + str(m))
@@ -122,7 +127,7 @@ def plot_3dscatter(nparray, norm = "Normalized"):
         ax.set_title('Nodule surface - ' + str(norm))
 
 if __name__ == '__main__':  
-    imagespath = r'/media/lab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/*/*/*.jpg'
+    imagespath = r'/media/kinseylab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/*/*/*.jpg'
     resultpath = os.path.split(os.getcwd())[0] + r'/results/Nodule Surface/'
     img_list = glob.glob(imagespath)
     numparr = np.zeros((1,64,64))
@@ -130,8 +135,8 @@ if __name__ == '__main__':
     for n in range(len(img_list)):
         im = cv2.imread(img_list[n], 0)
         numparr[0][:][:] = im
-        plot_3dmesh(numparr, norm = 'Raw')
-        plot_3dmesh(normalizePlanes(numparr), norm = 'Normalized')
+        # plot_3dmesh(numparr, norm = 'Raw')
+        # plot_3dmesh(normalizePlanes(numparr), norm = 'Normalized')
         
         levels = pywt.dwt_max_level(data_len = 64, filter_len = 'db1')
         print(levels)
