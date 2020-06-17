@@ -28,6 +28,19 @@ import cv2, sys, os
 # ---------------------------------------------------------------------------- #
 
 def mutlitest_stats():
+    """
+    Definition:
+    Inputs:
+    Outputs:
+    """
+    print('running analysis')
+
+def violin_plots():
+    """
+    Definitions:
+    Inputs:
+    Outputs:
+    """
 
 
 if __name__ == '__main__':
@@ -58,7 +71,7 @@ if __name__ == '__main__':
     create_violin = True
     check_stats = True
 
-    # Dataframe Inits
+    # Dataframe Inits_
     df = pd.DataFrame()              # General Dataframe to generate Bar-graph data
     df_alex = pd.DataFrame()         # AlexeNet Dataframe for violin plots
     df_walex = pd.DataFrame()        # WalexNet Dataframe for violin plots
@@ -80,12 +93,24 @@ if __name__ == '__main__':
                         for l in range(len(row)-1):
                             mean_.append(float(row[l+1]))
                 df[header] = np.transpose(mean_)
-                if (name.split('_')[0] == 'AlexNet'):
-                    df_alex[name.split('_')[0]] = np.transpose(mean_)
-                if (name.split('_')[0] == 'WalexNet'):
-                    df_walex[name.split('_')[0]] = np.transpose(mean_)
                 if (name.split('_')[0] == 'Conv1'):
                     df_conv1[name.split('_')[0]] = np.transpose(mean_)
                 if (name.split('_')[0] == 'Wave1'):
                     df_wave1[name.split('_')[0]] = np.transpose(mean_)
+                if (name.split('_')[0] == 'inception'):
+                    if(name.split('_')[1] == 'conv'):
+                        df_convcept[name.split('_')[1]] = np.transpose(mean_)
+                    if(name.split('_')[1] == 'wave'):
+                        df_wavecept[name.split('_')[1]] = np.transpose(mean_)
+
+            if check_stats:
+                print("Comparing Single-level Analysis")
+                multitest_stats(df_wave1, df_conv1)
+            
+                print("Comparing Multi-level Analysis")
+                multitest_stats(df_wavecept, df_convcept)
+            
+            if create_violin:
+                print("Violin Plots")
+
                         
