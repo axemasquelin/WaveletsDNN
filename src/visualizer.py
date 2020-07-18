@@ -34,28 +34,31 @@ def dwcfilter (numparr, m, wave):
 
     coeffs = pywt.dwt2(numparr, wave)
     LL, (LH, HL, HH) = coeffs
-    cv2.imshow('LL', LL[0])    
-
+    cv2.imshow('LL', LL[0])
+    cv2.imshow('LH', LH[0])    
+    cv2.imshow('HL', HL[0])
+    cv2.imshow('HH', HH[0])
+    cv2.waitKey(0)
     plt.show()
 
-    if (m + 1 > 1): 
-        for i in range(m):
-            coeffs = pywt.dwt2(LL, wave)
-            LL, (LH, HL, HH) = coeffs
+    # if (m + 1 > 1): 
+    #     for i in range(m):
+    #         coeffs = pywt.dwt2(LL, wave)
+    #         LL, (LH, HL, HH) = coeffs
 
             
 
-    if (m < levels - 1):
-        plot_3dmesh(LL, norm = "Wavelet LL " + str(m))
-        plot_3dmesh(HL, norm = "Wavelet HL " + str(m))
-        plot_3dmesh(LH, norm = "Wavelet LH " + str(m))
-        plot_3dmesh(HH, norm = "Wavelet HH " + str(m))
-    else:
-        print(m)
-        plot_3dscatter(LL, norm = "Wavelet LL " + str(m))
-        plot_3dscatter(HL, norm = "Wavelet HL " + str(m))
-        plot_3dscatter(LH, norm = "Wavelet LH " + str(m))
-        plot_3dscatter(HH, norm = "Wavelet HH " + str(m))
+    # if (m < levels - 1):
+    #     plot_3dmesh(LL, norm = "Wavelet LL " + str(m))
+    #     plot_3dmesh(HL, norm = "Wavelet HL " + str(m))
+    #     plot_3dmesh(LH, norm = "Wavelet LH " + str(m))
+    #     plot_3dmesh(HH, norm = "Wavelet HH " + str(m))
+    # else:
+    #     print(m)
+    #     plot_3dscatter(LL, norm = "Wavelet LL " + str(m))
+    #     plot_3dscatter(HL, norm = "Wavelet HL " + str(m))
+    #     plot_3dscatter(LH, norm = "Wavelet LH " + str(m))
+    #     plot_3dscatter(HH, norm = "Wavelet HH " + str(m))
         
 
     
@@ -135,6 +138,8 @@ if __name__ == '__main__':
     for n in range(len(img_list)):
         im = cv2.imread(img_list[n], 0)
         numparr[0][:][:] = im
+        cv2.imshow('images', im)
+        cv2.waitKey(0)
         # plot_3dmesh(numparr, norm = 'Raw')
         # plot_3dmesh(normalizePlanes(numparr), norm = 'Normalized')
         

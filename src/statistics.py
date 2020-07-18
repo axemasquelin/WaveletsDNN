@@ -28,9 +28,10 @@ def multitest_stats(df1, df2):
     Inputs:
     Outputs:
     """
-    print(df1['aucs'])
+
     t, p = scipy.stats.ttest_ind(df1['aucs'], df2['aucs'])
-    print(p)
+
+
 
 def violin_plots():
     """
