@@ -34,12 +34,12 @@ def dwcfilter (numparr, m, wave):
 
     coeffs = pywt.dwt2(numparr, wave)
     LL, (LH, HL, HH) = coeffs
-    cv2.imshow('LL', LL[0])
-    cv2.imshow('LH', LH[0])    
-    cv2.imshow('HL', HL[0])
-    cv2.imshow('HH', HH[0])
-    cv2.waitKey(0)
-    plt.show()
+    cv2.imshow('LL', LL[0]*1.2)
+    cv2.imshow('LH', LH[0]*1.2)    
+    cv2.imshow('HL', HL[0]*1.2)
+    cv2.imshow('HH', HH[0]*1.2)
+    
+    # plt.show()
 
     # if (m + 1 > 1): 
     #     for i in range(m):
@@ -138,8 +138,8 @@ if __name__ == '__main__':
     for n in range(len(img_list)):
         im = cv2.imread(img_list[n], 0)
         numparr[0][:][:] = im
-        cv2.imshow('images', im)
-        cv2.waitKey(0)
+        # cv2.imshow('images', im)
+
         # plot_3dmesh(numparr, norm = 'Raw')
         # plot_3dmesh(normalizePlanes(numparr), norm = 'Normalized')
         
@@ -150,4 +150,4 @@ if __name__ == '__main__':
         
         cv2.imshow('images', im)
         plt.show()
-
+        cv2.waitKey(0)

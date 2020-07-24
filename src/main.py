@@ -167,12 +167,12 @@ if __name__ == '__main__':
 
     # Network Parameters
     models = [
-            # 'Wave1',            # Single Level Wavelet Decomposition Layer extracting 4 features
-            # 'Conv1',            # Convolutional Layer 4 Feature Extracted
-            # 'inception_wave',   # Multi Level Wavelet Decomposition
-            # 'inception_conv',   # Multiscale Convolutional Module.
-            'AlexNet',         # Standard Alexnet Architecture with modified classifier
-            'WalexNet',        # Wavelet Alexnet Architecture
+            'Wave1',            # Single Level Wavelet Decomposition Layer extracting 4 features
+            'Conv1',            # Convolutional Layer 4 Feature Extracted
+            'inception_wave',   # Multi Level Wavelet Decomposition
+            'inception_conv',   # Multiscale Convolutional Module.
+            # 'AlexNet',         # Standard Alexnet Architecture with modified classifier
+            # 'WalexNet',        # Wavelet Alexnet Architecture
             ]
 
     wkernel = [
@@ -204,7 +204,7 @@ if __name__ == '__main__':
     class_names = ["Malignant", "Benign"]   # Class Name (0 - Malignant, 1 - Benign)
     gpu_loc = 0                             # Define GPU to use (0 or 1)
     seed = 2020                             # Define Random Seed
-    reps = 15                                # Define number of repetition for each test
+    reps = 50                                # Define number of repetition for each test
     fig = 3                                 # Defines figure counter
     
     # GPU Initialization
@@ -259,7 +259,7 @@ if __name__ == '__main__':
     
             
             plt.figure(fig)
-            utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model) + "Repetition " + str(r))
+            utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model))
             fig += 1
         
         
