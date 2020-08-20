@@ -70,7 +70,7 @@ def set_parameter_requires_grad(model, feature_extracting = False):
             param.requires_grad = False
 
 
-def calcAuc (fps, tps, mode, reps, plot_roc = True):
+def calcAuc (fps, tps, mode, reps, plot_roc = False):
     ''' Calculate mean ROC/AUC for a given set of 
         true positives (tps) & false positives (fps) '''
 
@@ -146,7 +146,7 @@ def plot_roc_curve(tprs, mean_fpr, mean_tpr, mean_auc, std_auc, reps, mode):
     tprs_lower = np.maximum(mean_tpr - std_tpr, 0)
     plt.fill_between(
         mean_fpr, tprs_lower, tprs_upper,
-        color='grey', alpha=.2, label=r'$\pm$ std.'
+        color='grey', alpha=.4, label=r'$\pm$ std.'
     )
 
     plt.xlim([-0.05, 1.05])

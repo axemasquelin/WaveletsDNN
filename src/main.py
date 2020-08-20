@@ -204,7 +204,7 @@ if __name__ == '__main__':
     class_names = ["Malignant", "Benign"]   # Class Name (0 - Malignant, 1 - Benign)
     gpu_loc = 0                             # Define GPU to use (0 or 1)
     seed = 2020                             # Define Random Seed
-    reps = 50                                # Define number of repetition for each test
+    reps = 50                               # Define number of repetition for each test
     fig = 3                                 # Defines figure counter
     
     # GPU Initialization
@@ -265,7 +265,7 @@ if __name__ == '__main__':
         
         print('fprs: ' + str(fprs))
         print('tprs: ' + str(tprs))
-        auc_scores[0,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= True)
+        auc_scores[0,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= False)
         fig += 1
 
         mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(trainloss, model, static_fig, fig, plot_loss = True, plot_static= True)
