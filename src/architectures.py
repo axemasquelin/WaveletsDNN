@@ -124,7 +124,7 @@ class Conv_1 (nn.Module):
         self.features = nn.Sequential(
             nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1),
             nn.ReLU(inplace = True),
-            # nn.MaxPool2d(kernel_size = 3, stride = 2),
+            nn.MaxPool2d(kernel_size = 3, stride = 2),
         )
 
         self.avgpool = nn.AdaptiveAvgPool2d((6,6))        
@@ -139,8 +139,9 @@ class Conv_1 (nn.Module):
         )
 
     def forward(self, x, device):
+        # print(x.size())
         x = self.features(x)
-        print(x.size())
+        # print(x.size())
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)

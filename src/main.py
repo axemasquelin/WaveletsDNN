@@ -8,10 +8,13 @@
 # Libraries
 # ---------------------------------------------------------------------------- #
 from sklearn.metrics import roc_curve, auc, confusion_matrix
+from sklearn.model_selection import train_test_split
+from skorch.dataset import Dataset
 from training_testing import *
 from architectures import *
 
 import preprocessing
+import dataload
 import utils
 
 import torchvision.transforms as transforms
@@ -201,19 +204,25 @@ if __name__ == '__main__':
     save_auc = True     # Checks to save .csv of all AUCs
 
     # Variables
-    class_names = ["Malignant", "Benign"]   # Class Name (0 - Malignant, 1 - Benign)
+    class_names = ["Benign", "Malignant"]   # Class Name (1 - Malignant, 0 - Benign)
     gpu_loc = 0                             # Define GPU to use (0 or 1)
     seed = 2020                             # Define Random Seed
-    reps = 50                               # Define number of repetition for each test
+    folds = 5                               # Cross Validation Folds
+    reps = 5                                # Define number of repetition for each test
     fig = 3                                 # Defines figure counter
     
     # GPU Initialization
     device = GPU_init(gpu_loc)
 
     # Defining Dataset Path
-    TrainPath = r'/media/kinseylab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/Group1/'
-    TestPath = r'/media/kinseylab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/Group0/'    
-        
+    # TrainPath = r'/media/kinseylab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/Group1/'
+    # TestPath = r'/media/kinseylab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/Group0/'    
+    allfiles =r'/media/kinseylab/Linux/Medical Images/Boston Data/DataSet/Patch CT/Grayscale/Group2/'
+    
+    cwd = os.getcwd()
+    X, y = dataload.load_img(allfiles)
+    os.chdir(cwd)
+
     for model in models:
         print("Selected Model: " + str(model))
         np.random.seed(seed)  
@@ -229,43 +238,45 @@ if __name__ == '__main__':
 
         # Defining empty lists to store network performance information
         fprs, tprs, trainloss, valloss = [], [], [], []
-        auc_scores = np.zeros((1,reps))
+        auc_scores = np.zeros((1,reps*folds))
+        for k in range(folds):
+            for r in range(reps):
+                progressBar(r + 1, reps)
+                X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state = k)
 
-        for r in range(reps):
-            progressBar(r + 1, reps)
+                # Load Training Dataset
+                # X = transform(X)
+                trainset = Dataset(X_train, y_train)
+                # trainset = torchvision.datasets.ImageFolder(TrainPath, transform = transform)     
+                trainloader = torch.utils.data.DataLoader(trainset, batch_size= 100, shuffle= True)
 
-            # Load Training datasets 
-            trainset = torchvision.datasets.ImageFolder(TrainPath, transform = transform)    
-            trainloader = torch.utils.data.DataLoader(trainset, batch_size= 100, shuffle= True)
-            
-            # Load Testing Datasets
-            testset = torchvision.datasets.ImageFolder(TestPath, transform = transform)
-            testloader = torch.utils.data.DataLoader(testset, batch_size= 100, shuffle= True)
+                #Load testing Dataset
+                testset = Dataset(X_train, y_train)
+                testloader = torch.utils.data.DataLoader(testset, batch_size= 100, shuffle= True)
 
-            trainLoss, validLoss, trainAcc, validAcc = train(trainloader, testloader, net, device, r,  opt, model)
-            
-            trainloss.append(trainLoss)
-            valloss.append(validLoss)
-            
-            utils.plot_losses(fig, trainLoss, validLoss, model)
-            utils.plot_accuracies(fig, trainAcc, validAcc, model)
+                trainLoss, validLoss, trainAcc, validAcc = train(trainloader, testloader, net, device, r,  opt, model)
+                
+                trainloss.append(trainLoss)
+                valloss.append(validLoss)
+                
+                utils.plot_losses(fig, trainLoss, validLoss, model)
+                utils.plot_accuracies(fig, trainAcc, validAcc, model)
 
-                            
-            confmatrix, fp, tp, fils, raw = test(testloader, net, device, mode = model)
-            
-            fprs.append(fp), tprs.append(tp)
+                                
+                confmatrix, fp, tp, fils, raw = test(testloader, net, device, mode = model)
+                
+                fprs.append(fp), tprs.append(tp)
 
-            net.apply(utils.weight_reset)
-    
+                net.apply(utils.weight_reset)
+                
+                plt.figure(fig)
+                utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model))
+                fig += 1
             
-            plt.figure(fig)
-            utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model))
-            fig += 1
-        
         
         print('fprs: ' + str(fprs))
         print('tprs: ' + str(tprs))
-        auc_scores[0,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= False)
+        auc_scores[0,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= True)
         fig += 1
 
         mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(trainloss, model, static_fig, fig, plot_loss = True, plot_static= True)

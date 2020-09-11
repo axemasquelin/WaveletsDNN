@@ -29,21 +29,16 @@ import time
 import cv2, os
 # ---------------------------------------------------------------------------- #
 
-def tensor_cat(x2, x3, x5):
+def tensor_cat(x2, x3, x5): #Explain this function
     '''Concatenate Different Size Features, zero padding to match size ''' 
-    # print(x2.size())
-    # print(x3.size())
-    # print(x5.size())
 
     x3pad = F.pad(input = x3, pad=(8,8,8,8), mode = 'constant', value = 0)
-    # print(x3pad.size())
 
     x5pad = F.pad(input = x5, pad=(12,12,12,12), mode = 'constant', value = 0)
-    # print(x5pad.size())
     
     xcat = torch.cat((x2,x3pad),1)
     xcat = torch.cat((xcat, x5pad), 1)
-    # print(xcat.size())
+
     return xcat
 
 def adjust_lr(optimizer, lrs, epoch):
@@ -87,7 +82,7 @@ def calcAuc (fps, tps, mode, reps, plot_roc = False):
             plt.figure(reps, figsize=(10,8))
             plt.plot(
                 _fp, _tp, lw=1, alpha=0.5,
-                label='ROC fold %d (AUC = %0.2f)' % (itr+1, roc_auc)
+                # label='ROC fold %d (AUC = %0.2f)' % (itr+1, roc_auc)
             )
     print(len(aucs))
     mean_tpr = np.mean(tprs, axis=0)

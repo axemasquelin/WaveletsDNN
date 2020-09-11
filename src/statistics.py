@@ -30,6 +30,8 @@ def multitest_stats(df1, df2):
     """
 
     t, p = scipy.stats.ttest_ind(df1['aucs'], df2['aucs'])
+    print("T-value: ", t)
+    print("P-value: ", p)
 
 
 

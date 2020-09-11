@@ -81,8 +81,8 @@ def train(trainloader, testloader, net, device, rep, opt, model):
         for i, (images, labels) in enumerate(trainloader):
             # print(images.size())
             # Input
-            images = images.to(device)
-            labels = labels.to(device)
+            images = images.to(device = device, dtype = torch.float)
+            labels = labels.to(device = device)
             images = torch.autograd.Variable(images)
             labels = torch.autograd.Variable(labels)
             
@@ -129,7 +129,8 @@ def validate(testloader, criterion, net, device, mode):
         for i, (images, labels) in enumerate(testloader):
 
             # Load Images
-            images, labels = images.to(device), labels.to(device)
+            images = images.to(device = device, dtype = torch.float)
+            labels = labels.to(device = device)
             input_var = torch.autograd.Variable(images)
             target_var = torch.autograd.Variable(labels)
             
@@ -160,8 +161,9 @@ def test(testloader, net, device, mode = 3):
 
         for (images, labels) in testloader:
 
-            images, labels = images.to(device), labels.to(device)
-
+            images = images.to(device = device, dtype = torch.float)
+            labels = labels.to(device = device)
+            
             outputs = net(images, device)                                                
             fils = 0
             raw = 0
