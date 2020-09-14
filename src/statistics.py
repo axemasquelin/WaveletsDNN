@@ -16,6 +16,7 @@ import utils
 
 import matplotlib.pyplot as plt
 import statsmodels as sm
+import seaborn as sns
 import pandas as pd
 import numpy as np
 import scipy
@@ -30,18 +31,36 @@ def multitest_stats(df1, df2):
     """
 
     t, p = scipy.stats.ttest_ind(df1['aucs'], df2['aucs'])
+    # y = sm.stats.multitest.multipletests()
     print("T-value: ", t)
     print("P-value: ", p)
 
 
 
-def violin_plots():
+def violin_plots(df, metric, methods):
     """
     Definitions:
     Inputs:
     Outputs:
     """
+    plt.figure()
 
+    cols = [df.columns[-1]] + [col for col in df if col != df.columns[-1]]
+    df = df[cols]
+    
+    colors = ["windows blue", "amber", "greyish", "faded green", "dusty purple"]
+    my_pal = {"versicolor": "g", "setosa": "b", "virginica":"m"}
+
+    sns.violinplot(data = df, inner="quartile", fontsize = 15, palette= sns.color_palette("RdBu_r", 7)) #bw = 0.15
+
+    plt.title(metric + " Distribution Across Methodologies")
+    plt.xlabel("Methodology", fontsize = 12)
+    plt.ylabel(metric, fontsize = 12)
+    
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+
+    plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png")
 
 if __name__ == '__main__':
     """
@@ -84,7 +103,7 @@ if __name__ == '__main__':
     for root, dirs, files in os.walk(os.path.split(os.getcwd())[0] + "/results/", topdown = True):
         for name in files:
             if (name.endswith(metrics[0] + ".csv")):
-                header = name.split('_')[0]
+                header = name.split('_aucs')[0]
                 if header in models:
                     mean_ = []
                     filename = os.path.join(root,name)
@@ -104,7 +123,7 @@ if __name__ == '__main__':
                             df_convcept[metrics[0]] = np.transpose(mean_)
                         if(name.split('_')[1] == 'wave'):
                             df_wavecept[metrics[0]] = np.transpose(mean_)
-
+    print(df)
     if check_stats:
         print("Comparing Single-level Analysis")
         multitest_stats(df_wave1, df_conv1)
@@ -114,5 +133,6 @@ if __name__ == '__main__':
             
     if create_violin:
         print("Violin Plots")
+        violin_plots(df, metrics[0], models)
 
                         

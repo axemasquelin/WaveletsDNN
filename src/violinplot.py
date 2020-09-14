@@ -137,6 +137,9 @@ if __name__ == '__main__':
               ]
     
     create_violin = True
+    check_stats = True
+    plot_auc = True
+
     df = pd.DataFrame()         # General Dataframe to generate Bar-graph data
     df_alex = pd.DataFrame()     # SVM Dataframe for violin plots
     df_walex = pd.DataFrame()      # RF Dataframe for violin plots
@@ -167,11 +170,13 @@ if __name__ == '__main__':
             # m += 1
         
         # gen_bars(specs, headers, datasets, methods)
-
+    print(df)
     if create_violin:
-        # violin(df_alex, method = 'AlexNet')
-        # violin(df_walex, method = 'WalexNet')
-        dataset_analysis(df_alex, df_walex, method1 = 'AlexNet', method2 = 'WalexNet')
+        if check_stats:
+            # violin(df_alex, method = 'AlexNet')
+            # violin(df_walex, method = 'WalexNet')
+            dataset_analysis(df_alex, df_walex, method1 = 'AlexNet', method2 = 'WalexNet')
+        if plot_auc:
 
 
     # plt.show()
