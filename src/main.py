@@ -237,13 +237,13 @@ if __name__ == '__main__':
         mean_valid_fig = 2
 
         # Defining empty lists to store network performance information
-        fprs, tprs, trainloss, valloss = [], [], [], []
-        auc_scores = np.zeros((1,reps*folds))
+        trainloss, valloss =  [], []
+        auc_scores = np.zeros((folds,reps))
         for k in range(folds):
+            progressBar(k + 1, reps)
+            X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state = k)
+            fprs, tprs = [], []
             for r in range(reps):
-                progressBar(r + 1, reps)
-                X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state = k)
-
                 # Load Training Dataset
                 # X = transform(X)
                 trainset = Dataset(X_train, y_train)
@@ -274,10 +274,10 @@ if __name__ == '__main__':
                 fig += 1
             
         
-        print('fprs: ' + str(fprs))
-        print('tprs: ' + str(tprs))
-        auc_scores[0,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= True)
-        fig += 1
+            # print('fprs: ' + str(fprs))
+            # print('tprs: ' + str(tprs))
+            auc_scores[k,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= True)
+            fig += 1
 
         mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(trainloss, model, static_fig, fig, plot_loss = True, plot_static= True)
         fig += 1

@@ -92,7 +92,7 @@ def calcAuc (fps, tps, mode, reps, plot_roc = False):
 
     if plot_roc:
         plot_roc_curve(tprs, mean_fpr, mean_tpr, mean_auc, std_auc, reps, mode)
-        
+    print(aucs)
     return aucs
 
 
