@@ -46,9 +46,19 @@ def multitest_stats(data1, data2):
 
     return y
 
+def annotatefig(sig, x1, x2, y, h):
+    if sig < 0.05:
+        if (sig < 0.05 and sig > 0.01):
+            sigtext = '*'
+        elif (sig < 0.01 and sig > 0.001): 
+            sigtext = '**'
+        elif sig < 0.001: 
+            sigtext = '***'
 
+        plt.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c='k')
+        plt.text((x1+x2)*.5, y+h, sigtext , ha='center', va='bottom', color='k')
 
-def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None):
+def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = None, sig_cl = None):
     """
     Definitions:
     Inputs:
@@ -72,33 +82,25 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None):
     plt.gca().spines['right'].set_visible(False)
 
     if sig_sl != None:
-        if sig_sl[1][0] > 0.05:
-            sigtext = 'ns'
-        elif (sig_sl[1][0] < 0.05 and sig_sl[1][0] > 0.01):
-            sigtext = '*'
-        elif (sig_sl[1][0] < 0.01 and sig_sl[1][0] > 0.001): 
-            sigtext = '**'
-        elif sig_sl[1][0] < 0.001: 
-            sigtext = '***'
         x1, x2 = 0, 1
-        y, h, col = .945, .005, 'k'
-        plt.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c=col)
-        plt.text((x1+x2)*.5, y+h, sigtext , ha='center', va='bottom', color=col)
+        y, h, col = .90, .005, 'k'
+        annotatefig(sig_sl[1][0], x1, x2, y, h)
 
     if sig_ml != None:
-        if sig_ml[1][0] > 0.05:
-            sigtext = 'ns'
-        elif (sig_ml[1][0] < 0.05 and sig_ml[1][0] > 0.001):
-            sigtext = '*'
-        elif (sig_ml[1][0] < 0.01 and sig_ml[1][0] > 0.001): 
-            sigtext = '**'
-        elif sig_ml[1][0] < 0.001: 
-            sigtext = '***'
         x1, x2 = 2, 3
-        y, h, col = .945, .005, 'k'
-        plt.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c=col)
-        plt.text((x1+x2)*.5, y+h, sigtext, ha='center', va='bottom', color=col)
-    
+        y, h, col = .90, .005, 'k'
+        annotatefig(sig_ml[1][0], x1, x2, y, h)
+
+    if sig_wl != None:
+        x1, x2 = 0, 3
+        y, h, col = .915, .005, 'k'
+        annotatefig(sig_wl[1][0], x1, x2, y, h)
+
+    if sig_cl != None:
+        x1, x2 = 1, 2
+        y, h, col = .915, .005, 'k'
+        annotatefig(sig_cl[1][0], x1, x2, y, h)
+
     plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png")
 
 if __name__ == '__main__':
@@ -170,10 +172,12 @@ if __name__ == '__main__':
         
         print("Comparing Multi-level Analysis")
         sml = multitest_stats(np_wavecept, np_convcept)
-            
+        
+        swl = multitest_stats(np_wavecept, np_wave1)
+        scl = multitest_stats(np_conv1, np_convcept)
     if create_violin:
         print("Violin Plots")
         if check_stats:
-            violin_plots(df, metrics[0], models, sig_sl = ssl, sig_ml = sml)
+            violin_plots(df, metrics[0], models, sig_sl = ssl, sig_ml = sml, sig_wl = swl, sig_cl = scl)
         else:
             violin_plots(df, metrics[0], models)
