@@ -135,13 +135,14 @@ def multiscale_wd(loader, device, size):
 
     numparr = loader.data.cpu().numpy()
     LL_array = np.zeros((len(loader), 1, size, size), dtype = float)
-    wavelet_img = np.zeros((len(loader), 3, size, size), dtype = float)
+    wavelet_img = np.zeros((len(loader), 4, size, size), dtype = float)
 
     for i in range(len(loader)):
         coeffs = pywt.dwt2(numparr[i], 'db1')
         LL, (LH, HL, HH) = coeffs
 
         LL_array[i,:,:,:] = LL
+        wavelet_img[i,0,:,:] = LL
         wavelet_img[i,0,:,:] = LH
         wavelet_img[i,1,:,:] = HL
         wavelet_img[i,2,:,:] = HH

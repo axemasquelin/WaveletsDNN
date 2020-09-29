@@ -111,16 +111,52 @@ def net_select(model):
         net = Conv_1()
         net.apply(utils.init_weights)
 
-    elif (model == "inception_wave"):
+    elif (model == "Wave2"):
         size = 224
         transform = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         # transforms.RandomCrop((12,12)),
                                         transforms.Grayscale(),
                                         transforms.ToTensor()])
-        net = incept_wave()
+        net = incept_wave2()
         net.apply(utils.init_weights)
 
-    elif (model == "inception_conv"):
+    elif (model == "Wave3"):
+        size = 224
+        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
+                                        # transforms.RandomCrop((12,12)),
+                                        transforms.Grayscale(),
+                                        transforms.ToTensor()])
+        net = incept_wave3()
+        net.apply(utils.init_weights)
+    
+    elif (model == "Wave4"):
+        size = 224
+        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
+                                        # transforms.RandomCrop((12,12)),
+                                        transforms.Grayscale(),
+                                        transforms.ToTensor()])
+        net = incept_wave4()
+        net.apply(utils.init_weights)
+
+    elif (model == "Wave5"):
+        size = 224
+        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
+                                        # transforms.RandomCrop((12,12)),
+                                        transforms.Grayscale(),
+                                        transforms.ToTensor()])
+        net = incept_wave5()
+        net.apply(utils.init_weights)
+
+    elif (model == "Wave6"):
+        size = 224
+        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
+                                        # transforms.RandomCrop((12,12)),
+                                        transforms.Grayscale(),
+                                        transforms.ToTensor()])
+        net = incept_wave6()
+        net.apply(utils.init_weights)
+
+    elif (model == "Conv2"):
         size = 224
         transform = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         # transforms.RandomCrop((12,12)),
@@ -170,10 +206,15 @@ if __name__ == '__main__':
 
     # Network Parameters
     models = [
-            'Wave1',            # Single Level Wavelet Decomposition Layer extracting 4 features
-            'Conv1',            # Convolutional Layer 4 Feature Extracted
-            'inception_wave',   # Multi Level Wavelet Decomposition
-            'inception_conv',   # Multiscale Convolutional Module.
+            'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
+            'Wave2',   # Multi Level Wavelet Decomposition
+            'Wave3',   # Multi Level Wavelet Decomposition
+            'Wave4',   # Multi Level Wavelet Decomposition
+            'Wave5',   # Multi Level Wavelet Decomposition
+            'Wave6',   # Multi Level Wavelet Decomposition
+            'Conv1',   # Convolutional Layer 4 Feature Extracted
+            'Conv2',   # Multiscale Convolutional Module.
+
             # 'AlexNet',         # Standard Alexnet Architecture with modified classifier
             # 'WalexNet',        # Wavelet Alexnet Architecture
             ]
@@ -208,7 +249,7 @@ if __name__ == '__main__':
     gpu_loc = 0                             # Define GPU to use (0 or 1)
     seed = 2019                             # Define Random Seed
     folds = 5                               # Cross Validation Folds
-    reps = 5                                # Define number of repetition for each test
+    reps = 5                               # Define number of repetition for each test
     fig = 3                                 # Defines figure counter
     
     # GPU Initialization
@@ -230,6 +271,9 @@ if __name__ == '__main__':
         # Initialize Network and send it to GPU
         net, transform = net_select(model)
         net = net.to(device)
+
+        pytorch_total_params = sum(p.numel() for p in net.parameters())
+        print(pytorch_total_params)
         
         # Define Static figure counters
         static_fig = 0
@@ -238,6 +282,9 @@ if __name__ == '__main__':
 
         # Defining empty lists to store network performance information
         trainloss, valloss =  [], []
+        trainacc, valacc =  [], []
+        sensitivity =  np.zeros((folds,reps))
+        specificity =  np.zeros((folds,reps))
         auc_scores = np.zeros((folds,reps))
         for k in range(folds):
             progressBar(k + 1, reps)
@@ -258,39 +305,42 @@ if __name__ == '__main__':
                 
                 trainloss.append(trainLoss)
                 valloss.append(validLoss)
+                trainacc.append(trainAcc)
+                valacc.append(validAcc)
                 
                 utils.plot_losses(fig, trainLoss, validLoss, model)
                 utils.plot_accuracies(fig, trainAcc, validAcc, model)
 
                                 
-                confmatrix, fp, tp, fils, raw = test(testloader, net, device, mode = model)
+                confmatrix, fp, tp, sens, spec, fils, raw = test(testloader, net, device, mode = model)
                 
                 fprs.append(fp), tprs.append(tp)
-
                 net.apply(utils.weight_reset)
+
+                sensitivity[k,r] = sens
+                specificity[k,r] = spec
                 
                 plt.figure(fig)
                 utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model))
                 fig += 1
             
-        
-            # print('fprs: ' + str(fprs))
-            # print('tprs: ' + str(tprs))
             auc_scores[k,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= True)
             fig += 1
-
+        
         mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(trainloss, model, static_fig, fig, plot_loss = True, plot_static= True)
         fig += 1
+        # mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(trainloss, model, static_fig, fig, plot_loss = True, plot_static= True)
+        # fig += 1
 
-        print("Length of Mean: " + str(len(mean_losses)))
-        print("Length of Upper: " + str(len(loss_upper)))
-        print("Length of Lower: " + str(len(loss_lower)))
+        # print("Length of Mean: " + str(len(mean_losses)))
+        # print("Length of Upper: " + str(len(loss_upper)))
+        # print("Length of Lower: " + str(len(loss_lower)))
 
         plt.figure(mean_training_fig)
         plt.plot(mean_losses)
         plt.xlabel('Epochs', fontsize=14)
         plt.ylabel('Loss', fontsize=14)
-        plt.title(" Average Training Loss over Epochs")
+        plt.title(" Average Training Accuracy over Epochs")
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
         plt.gca().spines['top'].set_visible(False)
@@ -302,7 +352,7 @@ if __name__ == '__main__':
             np.arange(0,opt['epchs']), loss_lower, loss_upper,
             alpha=.2, label=r'$\pm$ std.'
             )
-        savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageLoss.png'
+        savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageAccuracy.png'
         plt.savefig(savepath, dpi = 100)
 
         #Validation Loss
@@ -317,7 +367,7 @@ if __name__ == '__main__':
         plt.plot(mean_losses)
         plt.xlabel('Epochs', fontsize=14)
         plt.ylabel('Loss', fontsize=14)
-        plt.title(" Average Validation Loss over Epochs")
+        plt.title(" Average Validation Accuracy over Epochs")
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
         plt.gca().spines['top'].set_visible(False)
@@ -329,10 +379,11 @@ if __name__ == '__main__':
             np.arange(0,opt['epchs']), loss_lower, loss_upper,
             alpha=.2, label=r'$\pm$ std.'
             )
-        savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageValidationLoss.png'
+        savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageValidationAccuracy.png'
         plt.savefig(savepath, dpi = 100)
 
-
-        utils.csv_save(model, auc_scores)             
+        utils.csv_save(model, sensitivity, name = 'sensitivity')
+        utils.csv_save(model, specificity, name = 'specificity')
+        utils.csv_save(model, auc_scores, name = 'auc')             
 
             

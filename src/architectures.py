@@ -17,83 +17,6 @@ import numpy as np
 import utils
 import cv2
 # ---------------------------------------------------------------------------- #
-class incept_wave(nn.Module):
-    def __init__(self):
-        
-        super(incept_wave, self).__init__()
-        self.nonlin = nn.ReLU(inplace = True)
-        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
-        self.classifier = nn.Sequential(
-            nn.Dropout(),
-            nn.Linear(9*6*6, 150),
-            nn.ReLU(inplace=True),
-            nn.Dropout(),
-            nn.Linear(150, 50),
-            nn.ReLU(inplace=True),
-            nn.Linear(50, 2),
-        )
-
-    def forward(self, x, device):
-        LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
-        LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
-        LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
-
-        x = utils.tensor_cat(x1,x2,x3)
-        
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        return x
-
-class incept_conv(nn.Module):
-    def __init__(self):
-        
-        super(incept_conv, self).__init__()
-        self.block2x2 = nn.Sequential(
-            nn.Conv2d(1, 3, kernel_size= 2, stride= 2, padding = 0),
-            nn.ReLU(inplace = True),
-            # nn.MaxPool2d(kernel_size = 3, stride = 2),        
-        )
-        self.block3x3 = nn.Sequential(
-            nn.Conv2d(1, 3, kernel_size= 4, stride= 4, padding = 0),
-            nn.ReLU(inplace = True),
-            # nn.MaxPool2d(kernel_size = 4, stride = 2), 
-        )
-        self.block5x5 = nn.Sequential(
-            nn.Conv2d(1, 3, kernel_size= 8, stride= 8, padding = 0),
-            nn.ReLU(inplace = True),
-            # nn.MaxPool2d(kernel_size = 8, stride = 2), 
-        )
-
-        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
-        self.classifier = nn.Sequential(
-            nn.Dropout(),
-            nn.Linear(9*6*6, 150),
-            nn.ReLU(inplace=True),
-            nn.Dropout(),
-            nn.Linear(150, 50),
-            nn.ReLU(inplace=True),
-            nn.Linear(50, 2),
-        )
-
-    def forward(self, x, device):
-        x2 = self.block2x2(x)
-        x3 = self.block3x3(x)
-        x5 = self.block5x5(x)
-
-        # print(x2.size())
-        # print(x3.size())
-        # print(x5.size())
-        # x = torch.cat((x2,x3, x5),1)
-        x = utils.tensor_cat(x2,x3,x5)
-        # print(x.size())
-
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        
-        return x
-
 class Wave_1(nn.Module):
     def __init__(self):
         
@@ -117,6 +40,152 @@ class Wave_1(nn.Module):
         x = self.classifier(x)
         return x
 
+class incept_wave2(nn.Module):
+    def __init__(self):
+        
+        super(incept_wave2, self).__init__()
+        self.nonlin = nn.ReLU(inplace = True)
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(8*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
+        LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        # LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+
+        x = utils.tensor_cat(x1,x2)
+        
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+
+class incept_wave3(nn.Module):
+    def __init__(self):
+        
+        super(incept_wave3, self).__init__()
+        self.nonlin = nn.ReLU(inplace = True)
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(12*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
+        LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+
+        x = utils.tensor_cat(x1,x2,x3)
+        
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+
+class incept_wave4(nn.Module):
+    def __init__(self):
+        
+        super(incept_wave4, self).__init__()
+        self.nonlin = nn.ReLU(inplace = True)
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(16*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
+        LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x4 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+
+        x = utils.tensor_cat(x1,x2,x3,x4)
+        
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+
+class incept_wave5(nn.Module):
+    def __init__(self):
+        
+        super(incept_wave5, self).__init__()
+        self.nonlin = nn.ReLU(inplace = True)
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(20*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
+        LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x4 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x5 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+
+        x = utils.tensor_cat(x1,x2,x3,x4,x5)
+        
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+    
+class incept_wave6(nn.Module):
+    def __init__(self):
+        
+        super(incept_wave6, self).__init__()
+        self.nonlin = nn.ReLU(inplace = True)
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(24*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
+        LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x4 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x5 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+        LL, x6 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
+
+        x = utils.tensor_cat(x1,x2,x3,x4,x5,x6)
+        
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+    
 class Conv_1 (nn.Module):
     def __init__(self):
         
@@ -145,6 +214,51 @@ class Conv_1 (nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)
+        return x
+        
+
+class incept_conv(nn.Module):
+    def __init__(self):
+        
+        super(incept_conv, self).__init__()
+        self.block2x2 = nn.Sequential(
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0),
+            nn.ReLU(inplace = True),
+            # nn.MaxPool2d(kernel_size = 3, stride = 2),        
+        )
+        self.block3x3 = nn.Sequential(
+            nn.Conv2d(1, 4, kernel_size= 4, stride= 4, padding = 0),
+            nn.ReLU(inplace = True),
+            # nn.MaxPool2d(kernel_size = 4, stride = 2), 
+        )
+        self.block5x5 = nn.Sequential(
+            nn.Conv2d(1, 4, kernel_size= 8, stride= 8, padding = 0),
+            nn.ReLU(inplace = True),
+            # nn.MaxPool2d(kernel_size = 8, stride = 2), 
+        )
+
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(12*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        x2 = self.block2x2(x)
+        x3 = self.block3x3(x)
+        x5 = self.block5x5(x)
+
+        x = utils.tensor_cat(x2,x3,x5)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        
         return x
 
 class AlexNet(nn.Module):

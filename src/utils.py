@@ -29,15 +29,24 @@ import time
 import cv2, os
 # ---------------------------------------------------------------------------- #
 
-def tensor_cat(x2, x3, x5): #Explain this function
+def tensor_cat(x1 = None, x2 = None, x3 = None, x4 = None, x5 = None, x6 = None): #Explain this function
     '''Concatenate Different Size Features, zero padding to match size ''' 
 
-    x3pad = F.pad(input = x3, pad=(8,8,8,8), mode = 'constant', value = 0)
-
-    x5pad = F.pad(input = x5, pad=(12,12,12,12), mode = 'constant', value = 0)
-    
-    xcat = torch.cat((x2,x3pad),1)
-    xcat = torch.cat((xcat, x5pad), 1)
+    if x2 is not None:
+        x2pad = F.pad(input = x2, pad=(8,8,8,8), mode = 'constant', value = 0)
+        xcat = torch.cat((x1,x2pad),1)
+    if x3 is not None:
+        x3pad = F.pad(input = x3, pad=(12,12,12,12), mode = 'constant', value = 0)
+        xcat = torch.cat((xcat,x3pad),1)
+    if x4 is not None:
+        x4pad = F.pad(input = x4, pad=(14,14,14,14), mode = 'constant', value = 0)
+        xcat = torch.cat((xcat,x4pad),1)
+    if x5 is not None:
+        x5pad = F.pad(input = x5, pad=(15,15,15,15), mode = 'constant', value = 0)
+        xcat = torch.cat((xcat,x5pad),1)
+    if x6 is not None:
+        x6pad = F.pad(input = x6, pad=(15,16,15,16), mode = 'constant', value = 0)
+        xcat = torch.cat((xcat,x6pad),1)
 
     return xcat
 
@@ -202,7 +211,7 @@ def plot_confusion_matrix(cm, classes, r, model,
 
 
 def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static = False):
-    print("Loss: " + str(loss))
+    # print("Loss: " + str(loss))
     losses = []
     
     for itr, _loss in enumerate(loss):
@@ -264,12 +273,12 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
 
     return mean_loss, loss_upper, loss_lower
 
-def csv_save(method, auc):
+def csv_save(method, data, name = ''):
     ''' Save AUCs scores to a csv file '''
 
-    cols = ['AUC'+str(i+1) for i in range(auc.shape[1])]
-    logs = pd.DataFrame(auc, columns=cols)    
-    pth_to_save =  os.path.split(os.getcwd())[0] + "/results/" + method + '/' + method +  "_aucs.csv"
+    cols = ['AUC'+str(i+1) for i in range(data.shape[1])]
+    logs = pd.DataFrame(data, columns=cols)    
+    pth_to_save =  os.path.split(os.getcwd())[0] + "/results/" + method + '/' + method +  "_" + name + ".csv"
     logs.to_csv(pth_to_save)
 
     print(logs)

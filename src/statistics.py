@@ -74,7 +74,7 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = Non
 
     sns.violinplot(data = df, inner="quartile", fontsize = 15, palette= sns.color_palette("RdBu_r", 7)) #bw = 0.15
 
-    plt.title(metric + " Distribution Across Methodologies")
+    plt.title(upper(metric) + " Distribution Across Methodologies")
     plt.xlabel("Methodology", fontsize = 12)
     plt.ylabel(metric, fontsize = 12)
     

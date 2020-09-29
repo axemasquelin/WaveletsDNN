@@ -23,6 +23,7 @@ import torch
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import preprocessing as pre
 import numpy as np
 import random
 import utils
@@ -81,6 +82,7 @@ def train(trainloader, testloader, net, device, rep, opt, model):
         for i, (images, labels) in enumerate(trainloader):
             # print(images.size())
             # Input
+            images = pre.normalizePlanes(images)
             images = images.to(device = device, dtype = torch.float)
             labels = labels.to(device = device)
             images = torch.autograd.Variable(images)
@@ -129,6 +131,7 @@ def validate(testloader, criterion, net, device, mode):
         for i, (images, labels) in enumerate(testloader):
 
             # Load Images
+            images = pre.normalizePlanes(images)
             images = images.to(device = device, dtype = torch.float)
             labels = labels.to(device = device)
             input_var = torch.autograd.Variable(images)
@@ -157,13 +160,17 @@ def test(testloader, net, device, mode = 3):
         targets = []        # np.zeros(len(testloader))
         prediction = []     # np.transpose(np.zeros(len(testloader)))
         softpred = []
+        tpos = 0
+        fpos = 0
+        tneg = 0
+        fneg = 0
         count = 0
 
         for (images, labels) in testloader:
-
+            images = pre.normalizePlanes(images)
             images = images.to(device = device, dtype = torch.float)
             labels = labels.to(device = device)
-            
+
             outputs = net(images, device)                                                
             fils = 0
             raw = 0
@@ -179,20 +186,36 @@ def test(testloader, net, device, mode = 3):
                 softpred.append(outputs[i,1].cpu().squeeze().numpy())
                 count += 1
 
-            
+                if labels[i] == 1:
+                    if labels[i] == pred[i]:
+                        tpos += 1
+                    else:
+                        fpos += 1
+
+                else:
+                    if labels[i] == pred[i]:
+                        tneg += 1
+                    else:
+                        fneg += 1 
+
+
+        sens = tpos / (tpos + fneg)
+        spec = tneg / (tneg + fpos)
         acc = (100 * correct/total)
         print('Accuracy of Network: %d %%' %acc)
 
-        fp, tp, threshold = roc_curve(targets, softpred[:])
-        print('FP: ' + str(fp))
-        print('TP: ' + str(tp))
+        fps, tps, threshold = roc_curve(targets, softpred[:])
+        print('FPs: ' + str(fps))
+        print('TPs: ' + str(tps))
         
         conf_matrix = confusion_matrix(prediction, targets)
     
     return (
         conf_matrix,
-        fp,
-        tp,
+        fps,
+        tps,
+        sens,
+        spec,
         fils,
         raw
     )
