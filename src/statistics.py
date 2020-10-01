@@ -105,7 +105,7 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = Non
         x1, x2 = 0, 1
         y, h, col = .90, .005, 'k'
         annotatefig(sig_cl[1][0], x1, x2, y, h)
-
+    
     plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png")
 
 if __name__ == '__main__':
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     
     # Variable Flags
     create_violin = True
-    check_stats = True
+    check_stats = False
     print(os.path.split(os.getcwd()))
     
     for metric in metrics:
