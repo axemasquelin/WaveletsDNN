@@ -276,7 +276,7 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
 def csv_save(method, data, name = ''):
     ''' Save AUCs scores to a csv file '''
 
-    cols = ['AUC'+str(i+1) for i in range(data.shape[1])]
+    cols = [name +str(i+1) for i in range(data.shape[1])]
     logs = pd.DataFrame(data, columns=cols)    
     pth_to_save =  os.path.split(os.getcwd())[0] + "/results/" + method + '/' + method +  "_" + name + ".csv"
     logs.to_csv(pth_to_save)

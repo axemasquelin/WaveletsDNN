@@ -45,20 +45,19 @@ def progressBar(value, endvalue, bar_length=50):
 
 def GPU_init(loc):
     """
-    Definition:
-    Inputs:
-    Outputs:
+    Definition: GPU Initialization function
+    Inputs: loc - 0 or 1 depending on which GPU is being utilized
+    Outputs: check_gpu - gpu enabled variable
     """
     check_gpu = torch.device("cuda:" + str(loc) if torch.cuda.is_available() else "cpu")
     print("Available Device: " + str(check_gpu))
     
     return check_gpu
 
-def get_filters(model, raw):
+def get_filters(model, raw, fils):
     """
-    Definition:
-    Inputs:
-    Outputs:
+    Definition: Visualization function to show what each filter was focusing on for Conv1
+    Inputs: model - string of model
     """
     
     # Raw Image
@@ -77,125 +76,48 @@ def get_filters(model, raw):
     cv2.imwrite(os.path.split(os.getcwd())[0] + "/results/filters/" + model + "_filter02.png", fils[0,1,:,:]*1000)
     cv2.imwrite(os.path.split(os.getcwd())[0] + "/results/filters/" + model + "_filter03.png", fils[0,2,:,:]*1000)
 
-
 def net_select(model):
     """
-    Description:
-    Input:
-    Output:
+    Description: Network selection function
+    Input: model - string that defines which model will be used
+    Output: net - loaded network
     """
-
-    if (model == "mlp"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
-        net = NoConv_256()
+    
+    if (model == "Conv1"):
+        net = Conv_1()
+        net.apply(utils.init_weights)
+    
+    elif (model == "Conv2"):
+        net = incept_conv()
         net.apply(utils.init_weights)
 
     elif (model == "Wave1"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
         net = Wave_1()
         net.apply(utils.init_weights)
-    
-    elif (model == "Conv1"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
-        net = Conv_1()
-        net.apply(utils.init_weights)
-
     elif (model == "Wave2"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
         net = incept_wave2()
         net.apply(utils.init_weights)
 
     elif (model == "Wave3"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
         net = incept_wave3()
         net.apply(utils.init_weights)
     
     elif (model == "Wave4"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
         net = incept_wave4()
         net.apply(utils.init_weights)
 
     elif (model == "Wave5"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
         net = incept_wave5()
         net.apply(utils.init_weights)
 
     elif (model == "Wave6"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
         net = incept_wave6()
-        net.apply(utils.init_weights)
-
-    elif (model == "Conv2"):
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.RandomCrop((12,12)),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
-        net = incept_conv()
-        net.apply(utils.init_weights)
-
-    elif model == "AlexNet":
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        # transforms.Grayscale(),
-                                        transforms.ToTensor()])
-        net = AlexNet()
-        # net.apply(utils.init_weights)
-
-    elif model == "WalexNet":
-        size = 224
-        transform = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        transforms.Grayscale(),
-                                        transforms.ToTensor()])
-        net = WalexNet()
-
-    elif model == "alexnet":
-        size = 224
-        transform = transforms.Compose([transforms.Resize(size, interpolation = 2),
-                                        transforms.RandomHorizontalFlip(p=0.8),
-                                        transforms.ToTensor()
-                                        ])
-        net = torchvision.models.alexnet(pretrained = True)
-        utils.set_parameter_requires_grad(net,feature_extracting = True)
-        net.classifier[1] = nn.Linear(9216, 50)
-        net.classifier[4] = nn.Linear(50, 10)
-        net.classifier[6] = nn.Linear(10, 2)
+        net.apply(utils.init_weights)    
     
     else:
         print("Warning: Model Not Found")
     
-    return net, transform
+    return net
 
 if __name__ == '__main__':
     """
@@ -207,13 +129,13 @@ if __name__ == '__main__':
     # Network Parameters
     models = [
             'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
-            # 'Wave2',   # Multi Level Wavelet Decomposition
-            # 'Wave3',   # Multi Level Wavelet Decomposition
-            # 'Wave4',   # Multi Level Wavelet Decomposition
-            # 'Wave5',   # Multi Level Wavelet Decomposition
-            # 'Wave6',   # Multi Level Wavelet Decomposition
+            'Wave2',   # Multi Level Wavelet Decomposition
+            'Wave3',   # Multi Level Wavelet Decomposition
+            'Wave4',   # Multi Level Wavelet Decomposition
+            'Wave5',   # Multi Level Wavelet Decomposition
+            'Wave6',   # Multi Level Wavelet Decomposition
             'Conv1',   # Convolutional Layer 4 Feature Extracted
-            # 'Conv2',   # Multiscale Convolutional Module.
+            'Conv2',   # Multiscale Convolutional Module.
 
             # 'AlexNet',         # Standard Alexnet Architecture with modified classifier
             # 'WalexNet',        # Wavelet Alexnet Architecture
@@ -269,7 +191,7 @@ if __name__ == '__main__':
         np.random.seed(seed)  
 
         # Initialize Network and send it to GPU
-        net, transform = net_select(model)
+        net = net_select(model)
         net = net.to(device)
 
         pytorch_total_params = sum(p.numel() for p in net.parameters())
@@ -286,15 +208,16 @@ if __name__ == '__main__':
         sensitivity =  np.zeros((folds,reps))
         specificity =  np.zeros((folds,reps))
         auc_scores = np.zeros((folds,reps))
+
         for k in range(folds):
             progressBar(k + 1, reps)
             X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state = k)
             fprs, tprs = [], []
+
             for r in range(reps):
+
                 # Load Training Dataset
-                # X = transform(X)
                 trainset = Dataset(X_train, y_train)
-                # trainset = torchvision.datasets.ImageFolder(TrainPath, transform = transform)     
                 trainloader = torch.utils.data.DataLoader(trainset, batch_size= 100, shuffle= True)
 
                 #Load testing Dataset
@@ -353,9 +276,9 @@ if __name__ == '__main__':
         mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(valloss, model, static_fig, fig, plot_loss = True, plot_static= True)
         fig += 1
 
-        print("Length of Mean: " + str(len(mean_losses)))
-        print("Length of Upper: " + str(len(loss_upper)))
-        print("Length of Lower: " + str(len(loss_lower)))
+        # print("Length of Mean: " + str(len(mean_losses)))
+        # print("Length of Upper: " + str(len(loss_upper)))
+        # print("Length of Lower: " + str(len(loss_lower)))
 
         plt.figure(mean_valid_fig)
         plt.plot(mean_losses)
@@ -380,4 +303,4 @@ if __name__ == '__main__':
         utils.csv_save(model, specificity, name = 'specificity')
         utils.csv_save(model, auc_scores, name = 'auc')             
 
-            
+        

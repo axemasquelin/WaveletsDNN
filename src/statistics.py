@@ -73,33 +73,37 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = Non
     colors = ["windows blue", "amber", "greyish", "faded green", "dusty purple"]
     my_pal = {"versicolor": "g", "setosa": "b", "virginica":"m"}
 
-    sns.violinplot(data = df, inner="quartile", fontsize = 15, palette= sns.color_palette("RdBu_r", 7)) #bw = 0.15
-
-    plt.title(metric.upper() + " Distribution Across Methodologies")
+    sns.violinplot(data = df, inner="quartile", fontsize = 16, palette= sns.color_palette("RdBu_r", 7)) #bw = 0.15
     plt.xlabel("Methodology", fontsize = 12)
-    plt.ylabel(metric.upper(), fontsize = 12)
+    
+    if metric == 'auc':
+        plt.title(metric.upper() + " Distribution Across Methodologies")
+        plt.ylabel(metric.upper(), fontsize = 12)
+    else:
+        plt.title(metric.capitalize() + " Distribution Across Methodologies")
+        plt.ylabel(metric.capitalize(), fontsize = 12)    
     
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
 
     if sig_sl != None:
         x1, x2 = 0, 2
-        y, h, col = .90, .005, 'k'
+        y, h, col = .89, .005, 'k'
         annotatefig(sig_sl[1][0], x1, x2, y, h)
 
     if sig_ml != None:
         x1, x2 = 1, 3
-        y, h, col = .92, .005, 'k'
+        y, h, col = .915, .005, 'k'
         annotatefig(sig_ml[1][0], x1, x2, y, h)
 
     if sig_wl != None:
         x1, x2 = 2, 3
-        y, h, col = .91, .005, 'k'
+        y, h, col = .905, .005, 'k'
         annotatefig(sig_wl[1][0], x1, x2, y, h)
 
     if sig_cl != None:
         x1, x2 = 0, 1
-        y, h, col = .915, .005, 'k'
+        y, h, col = .90, .005, 'k'
         annotatefig(sig_cl[1][0], x1, x2, y, h)
 
     plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png")
@@ -127,8 +131,8 @@ if __name__ == '__main__':
 
     metrics = [                     # Select Metric to Evaluate
             'auc',                 # Area under the Curve
-            # 'sensitivity',         # Network Senstivity
-            # 'specificity',         # Network Specificity         
+            'sensitivity',         # Network Senstivity
+            'specificity',         # Network Specificity         
             ]
     
     # Variable Flags
@@ -185,10 +189,10 @@ if __name__ == '__main__':
             scl = multitest_stats(np_conv1, np_convcept)
         if create_violin:
             print("Violin Plots")
-            if check_stats:
+            if (check_stats and metric == 'auc'):
                 violin_plots(df2, metric, models, sig_sl = ssl, sig_ml = sml, sig_wl = swl, sig_cl = scl)
             else:
-                violin_plots(df2, metric, models)
+                violin_plots(df, metric, models)
 
         if metric == 'sensitivity':
             print("Wave1: ", df['Wave1'].mean())
