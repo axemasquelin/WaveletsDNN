@@ -284,7 +284,7 @@ if __name__ == '__main__':
         plt.plot(mean_losses)
         plt.xlabel('Epochs', fontsize=14)
         plt.ylabel('Loss', fontsize=14)
-        plt.title(" Average Validation Accuracy over Epochs")
+        plt.title(" Average Validation Loss over Epochs")
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
         plt.gca().spines['top'].set_visible(False)
@@ -296,7 +296,7 @@ if __name__ == '__main__':
             np.arange(0,opt['epchs']), loss_lower, loss_upper,
             alpha=.2, label=r'$\pm$ std.'
             )
-        savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageValidationAccuracy.png'
+        savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageValidationLoss.png'
         plt.savefig(savepath, dpi = 100)
 
         utils.csv_save(model, sensitivity, name = 'sensitivity')
