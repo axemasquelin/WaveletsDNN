@@ -137,7 +137,7 @@ if __name__ == '__main__':
     
     # Variable Flags
     create_violin = True
-    check_stats = True
+    check_stats = False
     print(os.path.split(os.getcwd()))
     
     for metric in metrics:
