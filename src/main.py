@@ -129,13 +129,13 @@ if __name__ == '__main__':
     # Network Parameters
     models = [
             'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
-            'Wave2',   # Multi Level Wavelet Decomposition
-            'Wave3',   # Multi Level Wavelet Decomposition
-            'Wave4',   # Multi Level Wavelet Decomposition
-            'Wave5',   # Multi Level Wavelet Decomposition
-            'Wave6',   # Multi Level Wavelet Decomposition
+            # 'Wave2',   # Multi Level Wavelet Decomposition
+            # 'Wave3',   # Multi Level Wavelet Decomposition
+            # 'Wave4',   # Multi Level Wavelet Decomposition
+            # 'Wave5',   # Multi Level Wavelet Decomposition
+            # 'Wave6',   # Multi Level Wavelet Decomposition
             'Conv1',   # Convolutional Layer 4 Feature Extracted
-            'Conv2',   # Multiscale Convolutional Module.
+            # 'Conv2',   # Multiscale Convolutional Module.
 
             # 'AlexNet',         # Standard Alexnet Architecture with modified classifier
             # 'WalexNet',        # Wavelet Alexnet Architecture
@@ -195,7 +195,7 @@ if __name__ == '__main__':
         net = net.to(device)
 
         pytorch_total_params = sum(p.numel() for p in net.parameters())
-        print(pytorch_total_params)
+        # print(pytorch_total_params)
         
         # Define Static figure counters
         static_fig = 0
@@ -208,7 +208,8 @@ if __name__ == '__main__':
         sensitivity =  np.zeros((folds,reps))
         specificity =  np.zeros((folds,reps))
         auc_scores = np.zeros((folds,reps))
-
+        train_time = np.zeros((folds,reps))
+        best_acc = 0
         for k in range(folds):
             progressBar(k + 1, reps)
             X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state = k)
@@ -224,29 +225,36 @@ if __name__ == '__main__':
                 testset = Dataset(X_train, y_train)
                 testloader = torch.utils.data.DataLoader(testset, batch_size= 100, shuffle= True)
 
-                trainLoss, validLoss, trainAcc, validAcc = train(trainloader, testloader, net, device, r,  opt, model)
+                trainLoss, validLoss, trainAcc, validAcc, trainTime = train(trainloader, testloader, net, device, r,  opt, model)
                 
                 trainloss.append(trainLoss)
                 valloss.append(validLoss)
                 trainacc.append(trainAcc)
                 valacc.append(validAcc)
-                
+                train_time[k,r] = trainTime
+
                 utils.plot_losses(fig, trainLoss, validLoss, model)
                 utils.plot_accuracies(fig, trainAcc, validAcc, model)
-
-                                
-                confmatrix, fp, tp, sens, spec, fils, raw = test(testloader, net, device, mode = model)
+                
+                print('[Mode: %s, Fold: %i, Rep: %i]' %(model, k, r))
+                confmatrix, fp, tp, sens, spec, fils, acc, raw = test(testloader, net, device, mode = model)             
+                
+                if acc > best_acc:
+                    best_acc = acc
+                    utils.model_save(model, net)
+                    
+                    plt.figure(fig)
+                    utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model), saveFlag = True)
+                    fig += 1
+                
+                
+                sensitivity[k,r] = sens
+                specificity[k,r] = spec
+                
                 
                 fprs.append(fp), tprs.append(tp)
                 net.apply(utils.weight_reset)
 
-                sensitivity[k,r] = sens
-                specificity[k,r] = spec
-                
-                plt.figure(fig)
-                utils.plot_confusion_matrix(confmatrix, class_names, r, model, normalize = True, title = 'Normalize Confusion Matrix ' + str(model))
-                fig += 1
-            
             auc_scores[k,:] = utils.calcAuc(fprs,tprs, model, fig, plot_roc= True)
             fig += 1
         
@@ -298,7 +306,8 @@ if __name__ == '__main__':
             )
         savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageValidationLoss.png'
         plt.savefig(savepath, dpi = 100)
-
+        
+        utils.csv_save(model, train_time, name = 'time')
         utils.csv_save(model, sensitivity, name = 'sensitivity')
         utils.csv_save(model, specificity, name = 'specificity')
         utils.csv_save(model, auc_scores, name = 'auc')             

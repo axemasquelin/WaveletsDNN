@@ -67,7 +67,9 @@ def train(trainloader, testloader, net, device, rep, opt, model):
     validLoss = np.zeros((opt['epchs']))    # Defining Zero Array for Validation Loss
     trainAcc = np.zeros((opt['epchs']))     # Defining Zero Array for Training Accuracy
     validAcc = np.zeros((opt['epchs']))     # Defining Zero Array for Validation Accuracy
+    trainTime = np.zeros((opt['epchs']))    # Defining Zero Array for Training Time
 
+    
     for epoch in range(opt['epchs']):  # loop over the dataset multiple times
 
         EpochTime = 0       # Zeroing Epoch Timer
@@ -80,7 +82,6 @@ def train(trainloader, testloader, net, device, rep, opt, model):
 
         end = time.time()
         for i, (images, labels) in enumerate(trainloader):
-            # print(images.size())
             # Input
             images = pre.normalizePlanes(images)
             images = images.to(device = device, dtype = torch.float)
@@ -104,17 +105,19 @@ def train(trainloader, testloader, net, device, rep, opt, model):
             
             running_loss += loss.item()
         
-        trainLoss[epoch], trainAcc[epoch] = running_loss/i, (correct/total) * 100 
+        trainLoss[epoch] = running_loss/i
+        trainAcc[epoch]  = (correct/total) * 100 
+        trainTime[epoch] = time.time()-end
+        
         validLoss[epoch], validAcc[epoch] = validate(testloader, criterion, net, device, model)
-
-        EpochTime += (time.time() - end)
-        print('[Mode: %s, Rep: %i, Epoch: %d, Epoch Time: %.3f]' %(model, rep, epoch + 1, EpochTime))
-        print('Train loss: %.5f | Train Accuracy: %.5f' %(trainLoss[epoch], trainAcc[epoch]))
-        print('Valid loss: %.5f | Valid Accuracy: %.5f \n' %( validLoss[epoch], validAcc[epoch]))
+        
+        # print('[Mode: %s, Rep: %i, Epoch: %d, Epoch Time: %.3f]' %(model, rep, epoch + 1, trainTime[epoch]))
+        # print('Train loss: %.5f | Train Accuracy: %.5f' %(trainLoss[epoch], trainAcc[epoch]))
+        # print('Valid loss: %.5f | Valid Accuracy: %.5f \n' %( validLoss[epoch], validAcc[epoch]))
        
         running_loss = 0.0
 
-    return trainLoss, validLoss, trainAcc, validAcc
+    return trainLoss, validLoss, trainAcc, validAcc, np.mean(trainTime)
 
 def validate(testloader, criterion, net, device, mode):
     """
@@ -205,9 +208,7 @@ def test(testloader, net, device, mode = 3):
         print('Accuracy of Network: %d %%' %acc)
 
         fps, tps, threshold = roc_curve(targets, softpred[:])
-        print('FPs: ' + str(fps))
-        print('TPs: ' + str(tps))
-        
+
         conf_matrix = confusion_matrix(prediction, targets)
     
     return (
@@ -217,5 +218,6 @@ def test(testloader, net, device, mode = 3):
         sens,
         spec,
         fils,
+        acc,
         raw
     )

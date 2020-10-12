@@ -36,6 +36,7 @@ class Wave_1(nn.Module):
         x = pre.singlelvl_wd(x, device, int(x.size()[2]/2))
         # print(x.size())
         x = self.avgpool(x)
+        # print(x.size())
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
@@ -59,11 +60,11 @@ class incept_wave2(nn.Module):
     def forward(self, x, device):
         LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
         LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
-        # LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
-
-        x = utils.tensor_cat(x1,x2)
         
+        x = utils.tensor_cat(x1,x2)
+        print(x.size())
         x = self.avgpool(x)
+        print(x.size())
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x

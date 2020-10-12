@@ -199,14 +199,15 @@ def plot_confusion_matrix(cm, classes, r, model,
         plt.text(j, i, format(cm[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
-
-    plt.title(title)
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.tight_layout()
-    savepath = os.path.split(os.getcwd())[0] + '/results/' + str(model) + '/' + str(model) + "_CM_" + 'repetition_' + str(r) + '.png'
-    plt.savefig(savepath)
-    plt.close()
+    
+    if saveFlag:
+        plt.title(title)
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+        plt.tight_layout()
+        savepath = os.path.split(os.getcwd())[0] + '/results/' + str(model) + '/' + str(model) + "_best_model.png"
+        plt.savefig(savepath)
+        plt.close()
   
 
 
@@ -272,6 +273,11 @@ def calcLoss_stats(loss, mode, static_fig, figure, plot_loss = True, plot_static
         plt.legend(loc="upper right", fontsize=14)
 
     return mean_loss, loss_upper, loss_lower
+
+def model_save(method, net):
+    print("Saving Network")
+    net_path = os.path.split(os.getcwd())[0] + "/results/" + method + '/' + method + '_bestnetwork.pt'
+    torch.save(net, net_path)
 
 def csv_save(method, data, name = ''):
     ''' Save AUCs scores to a csv file '''

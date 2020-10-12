@@ -133,6 +133,7 @@ if __name__ == '__main__':
             'auc',                 # Area under the Curve
             'sensitivity',         # Network Senstivity
             'specificity',         # Network Specificity         
+            'time',
             ]
     
     # Variable Flags
