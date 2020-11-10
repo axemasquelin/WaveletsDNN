@@ -117,10 +117,5 @@ def load_img(
     X, y = resample_img(neg_img, pos_img,
                         neg_label, pos_label,
                         resample)
-    # print(np.count_nonzero(y == 1))
-    # print(np.count_nonzero(y == 0))
-
-    # print(X[-1])
-    # print(y[-1])
     
     return X, y

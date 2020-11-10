@@ -77,9 +77,6 @@ def train(trainloader, testloader, net, device, rep, opt, model):
         total = 0           # Zeroing total images processed
         correct = 0         # Zeroing total classes correct
 
-        # Updating Learning Rate based on epoch
-        # utils.adjust_lr(optimizer, opt['lr'], opt['epchs'])    
-
         end = time.time()
         for i, (images, labels) in enumerate(trainloader):
             # Input
@@ -110,11 +107,7 @@ def train(trainloader, testloader, net, device, rep, opt, model):
         trainTime[epoch] = time.time()-end
         
         validLoss[epoch], validAcc[epoch] = validate(testloader, criterion, net, device, model)
-        
-        # print('[Mode: %s, Rep: %i, Epoch: %d, Epoch Time: %.3f]' %(model, rep, epoch + 1, trainTime[epoch]))
-        # print('Train loss: %.5f | Train Accuracy: %.5f' %(trainLoss[epoch], trainAcc[epoch]))
-        # print('Valid loss: %.5f | Valid Accuracy: %.5f \n' %( validLoss[epoch], validAcc[epoch]))
-       
+              
         running_loss = 0.0
 
     return trainLoss, validLoss, trainAcc, validAcc, np.mean(trainTime)

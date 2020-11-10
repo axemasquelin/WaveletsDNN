@@ -62,9 +62,9 @@ class incept_wave2(nn.Module):
         LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
         
         x = utils.tensor_cat(x1,x2)
-        print(x.size())
+        # print(x.size())
         x = self.avgpool(x)
-        print(x.size())
+        # print(x.size())
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x

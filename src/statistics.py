@@ -88,7 +88,7 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = Non
 
     if sig_sl != None:
         x1, x2 = 0, 2
-        y, h, col = .89, .005, 'k'
+        y, h, col = .885, .005, 'k'
         annotatefig(sig_sl[1][0], x1, x2, y, h)
 
     if sig_ml != None:
@@ -124,12 +124,10 @@ if __name__ == '__main__':
             'Wave5',                # Multi level Wavelet Decomposition Layer extracting 4 features
             'Wave6',                # Multi level Wavelet Decomposition Layer extracting 4 features
             'Conv1',                # Convolutional Layer 4 Feature Extracted
-            'Conv2',
-            # 'AlexNet',              # Standard Alexnet Architecture with modified classifier
-            # 'WalexNet',             # Wavelet Alexnet Architecture
+            'Conv3',
             ]
 
-    metrics = [                     # Select Metric to Evaluate
+    metrics = [                    # Select Metric to Evaluate
             'auc',                 # Area under the Curve
             'sensitivity',         # Network Senstivity
             'specificity',         # Network Specificity         
@@ -138,7 +136,7 @@ if __name__ == '__main__':
     
     # Variable Flags
     create_violin = True
-    check_stats = False
+    check_stats = True
     print(os.path.split(os.getcwd()))
     
     for metric in metrics:
@@ -170,14 +168,14 @@ if __name__ == '__main__':
                                 np_conv1 = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
                             if (header == 'Wave1'):
                                 np_wave1 = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
-                            if (header == 'Conv2'):
+                            if (header == 'Conv3'):
                                 np_convcept = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
                             if (header == 'Wave3'):
                                 np_wavecept =  np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=1)
-        print(np_wavecept)
+        
         df2 = df
         df2 = df2.drop(['Wave2', 'Wave4','Wave5','Wave6'], axis = 1)        
-        print(df2)
+        
         # print(df)
         if check_stats:
             print("Comparing Single-level Analysis")
@@ -210,3 +208,8 @@ if __name__ == '__main__':
             print("Wave4: ", df['Wave4'].mean())
             print("Wave5: ", df['Wave5'].mean())
             print("Wave6: ", df['Wave6'].mean())
+        
+        if metric == 'time':
+            print("Wave1: ", df['Wave1'].mean())
+            print("Conv1: ", df['Conv1'].mean())
+            
