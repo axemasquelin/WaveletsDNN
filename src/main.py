@@ -128,14 +128,14 @@ if __name__ == '__main__':
 
     # Network Parameters
     models = [
-            'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
+            # 'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
             # 'Wave2',   # Multi Level Wavelet Decomposition
             # 'Wave3',   # Multi Level Wavelet Decomposition
             # 'Wave4',   # Multi Level Wavelet Decomposition
             # 'Wave5',   # Multi Level Wavelet Decomposition
             # 'Wave6',   # Multi Level Wavelet Decomposition
-            'Conv1',   # Convolutional Layer 4 Feature Extracted
-            # 'Conv3',   # Multiscale Convolutional Module.
+            # 'Conv1',   # Convolutional Layer 4 Feature Extracted
+            'Conv3',   # Multiscale Convolutional Module.
             ]
 
     wkernel = [
@@ -192,7 +192,7 @@ if __name__ == '__main__':
         net = net.to(device)
 
         pytorch_total_params = sum(p.numel() for p in net.parameters())
-        # print(pytorch_total_params)
+        print(pytorch_total_params)
         
         # Define Static figure counters
         static_fig = 0

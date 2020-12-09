@@ -34,9 +34,8 @@ class Wave_1(nn.Module):
 
     def forward(self, x, device):
         x = pre.singlelvl_wd(x, device, int(x.size()[2]/2))
-        # print(x.size())
+
         x = self.avgpool(x)
-        # print(x.size())
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
@@ -61,10 +60,9 @@ class incept_wave2(nn.Module):
         LL, x1 = pre.multiscale_wd(x, device, int(x.size()[2]/2))
         LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
         
-        x = utils.tensor_cat(x1,x2)
-        # print(x.size())
+        x = utils.tensor_cat(x1,x2, padding = False)
+
         x = self.avgpool(x)
-        # print(x.size())
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
@@ -90,7 +88,7 @@ class incept_wave3(nn.Module):
         LL, x2 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
         LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
 
-        x = utils.tensor_cat(x1,x2,x3)
+        x = utils.tensor_cat(x1,x2,x3, padding = False)
         
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -119,7 +117,7 @@ class incept_wave4(nn.Module):
         LL, x3 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
         LL, x4 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
 
-        x = utils.tensor_cat(x1,x2,x3,x4)
+        x = utils.tensor_cat(x1,x2,x3,x4, padding = False)
         
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -149,7 +147,7 @@ class incept_wave5(nn.Module):
         LL, x4 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
         LL, x5 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
 
-        x = utils.tensor_cat(x1,x2,x3,x4,x5)
+        x = utils.tensor_cat(x1,x2,x3,x4,x5, padding = False)
         
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -180,7 +178,7 @@ class incept_wave6(nn.Module):
         LL, x5 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
         LL, x6 = pre.multiscale_wd(LL, device, int(LL.size()[2]/2))
 
-        x = utils.tensor_cat(x1,x2,x3,x4,x5,x6)
+        x = utils.tensor_cat(x1,x2,x3,x4,x5,x6, padding = False)
         
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
@@ -223,17 +221,17 @@ class incept_conv(nn.Module):
         
         super(incept_conv, self).__init__()
         self.block2x2 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0),
+            nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 3, stride = 2),        
         )
         self.block3x3 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 4, stride= 4, padding = 0),
+            nn.Conv2d(1, 4, kernel_size= 5, stride= 2, padding = 2, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 4, stride = 2), 
         )
         self.block5x5 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 8, stride= 8, padding = 0),
+            nn.Conv2d(1, 4, kernel_size= 7, stride= 2, padding = 3, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 8, stride = 2), 
         )
@@ -253,8 +251,10 @@ class incept_conv(nn.Module):
         x2 = self.block2x2(x)
         x3 = self.block3x3(x)
         x5 = self.block5x5(x)
-
-        x = utils.tensor_cat(x2,x3,x5)
+        print(x2.size())
+        print(x3.size())
+        print(x5.size())
+        x = utils.tensor_cat(x2,x3,x5, padding = False)
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)

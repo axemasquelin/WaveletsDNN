@@ -29,25 +29,44 @@ import time
 import cv2, os
 # ---------------------------------------------------------------------------- #
 
-def tensor_cat(x1 = None, x2 = None, x3 = None, x4 = None, x5 = None, x6 = None): #Explain this function
+def tensor_cat(x1 = None, x2 = None, x3 = None, x4 = None, x5 = None, x6 = None, padding = True): #Explain this function
     '''Concatenate Different Size Features, zero padding to match size ''' 
-
-    if x2 is not None:
-        x2pad = F.pad(input = x2, pad=(8,8,8,8), mode = 'constant', value = 0)
-        xcat = torch.cat((x1,x2pad),1)
-    if x3 is not None:
-        x3pad = F.pad(input = x3, pad=(12,12,12,12), mode = 'constant', value = 0)
-        xcat = torch.cat((xcat,x3pad),1)
-    if x4 is not None:
-        x4pad = F.pad(input = x4, pad=(14,14,14,14), mode = 'constant', value = 0)
-        xcat = torch.cat((xcat,x4pad),1)
-    if x5 is not None:
-        x5pad = F.pad(input = x5, pad=(15,15,15,15), mode = 'constant', value = 0)
-        xcat = torch.cat((xcat,x5pad),1)
-    if x6 is not None:
-        x6pad = F.pad(input = x6, pad=(15,16,15,16), mode = 'constant', value = 0)
-        xcat = torch.cat((xcat,x6pad),1)
-
+    if padding:            # Adding Padding around feature outputes. - Sparsity could impact performance. 
+        if x2 is not None:
+            # print(x1.size())
+            # print(x2.size())
+            x2pad = F.pad(input = x2, pad=(8,8,8,8), mode = 'constant', value = 0)
+            xcat = torch.cat((x1,x2pad),1)
+        if x3 is not None:
+            x3pad = F.pad(input = x3, pad=(12,12,12,12), mode = 'constant', value = 0)
+            xcat = torch.cat((xcat,x3pad),1)
+        if x4 is not None:
+            x4pad = F.pad(input = x4, pad=(14,14,14,14), mode = 'constant', value = 0)
+            xcat = torch.cat((xcat,x4pad),1)
+        if x5 is not None:
+            x5pad = F.pad(input = x5, pad=(15,15,15,15), mode = 'constant', value = 0)
+            xcat = torch.cat((xcat,x5pad),1)
+        if x6 is not None:
+            x6pad = F.pad(input = x6, pad=(15,16,15,16), mode = 'constant', value = 0)
+            xcat = torch.cat((xcat,x6pad),1)
+    
+    else:                   # Impact of Resizing to 32x32 without padding - does sparsity impact performance?    
+        if x2 is not None:
+            x2scaled = F.interpolate(x2, size = 32) 
+            xcat = torch.cat((x1,x2scaled),1)
+        if x3 is not None:
+            x3scaled = F.interpolate(x3, size = 32) 
+            xcat = torch.cat((xcat,x3scaled),1)
+        if x4 is not None:
+            x4scaled = F.interpolate(x4, size = 32) 
+            xcat = torch.cat((xcat,x4scaled),1)
+        if x5 is not None:
+            x5scaled = F.interpolate(x5, size = 32) 
+            xcat = torch.cat((xcat,x5scaled),1)
+        if x6 is not None:
+            x6scaled = F.interpolate(x6, size = 32) 
+            xcat = torch.cat((xcat,x6scaled),1)
+    
     return xcat
 
 def adjust_lr(optimizer, lrs, epoch):
