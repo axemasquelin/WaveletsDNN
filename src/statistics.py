@@ -88,22 +88,22 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = Non
 
     if sig_sl != None:
         x1, x2 = 0, 2
-        y, h, col = .885, .005, 'k'
+        y, h, col = .972, .003, 'k'
         annotatefig(sig_sl[1][0], x1, x2, y, h)
 
     if sig_ml != None:
         x1, x2 = 1, 3
-        y, h, col = .915, .005, 'k'
+        y, h, col = .988, .003, 'k'
         annotatefig(sig_ml[1][0], x1, x2, y, h)
 
     if sig_wl != None:
         x1, x2 = 2, 3
-        y, h, col = .905, .005, 'k'
+        y, h, col = .960, .003, 'k'
         annotatefig(sig_wl[1][0], x1, x2, y, h)
 
     if sig_cl != None:
         x1, x2 = 0, 1
-        y, h, col = .90, .005, 'k'
+        y, h, col = .961, .003, 'k'
         annotatefig(sig_cl[1][0], x1, x2, y, h)
     
     plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png")

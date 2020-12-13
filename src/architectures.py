@@ -221,17 +221,20 @@ class incept_conv(nn.Module):
         
         super(incept_conv, self).__init__()
         self.block2x2 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1, dilation = 1),
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0, dilation = 1),
+            # nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 3, stride = 2),        
         )
         self.block3x3 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 5, stride= 2, padding = 2, dilation = 1),
+            nn.Conv2d(1, 4, kernel_size= 4, stride= 4, padding = 2, dilation = 2),
+            # nn.Conv2d(1, 4, kernel_size= 5, stride= 2, padding = 2, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 4, stride = 2), 
         )
         self.block5x5 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 7, stride= 2, padding = 3, dilation = 1),
+            nn.Conv2d(1, 4, kernel_size= 8, stride= 8, padding = 8, dilation = 3),
+            # nn.Conv2d(1, 4, kernel_size= 7, stride= 2, padding = 3, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 8, stride = 2), 
         )
@@ -251,9 +254,51 @@ class incept_conv(nn.Module):
         x2 = self.block2x2(x)
         x3 = self.block3x3(x)
         x5 = self.block5x5(x)
-        print(x2.size())
-        print(x3.size())
-        print(x5.size())
+
+        x = utils.tensor_cat(x2,x3,x5, padding = False)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        
+        return x
+
+class incept_dilationconv(nn.Module):
+    def __init__(self):
+        
+        super(incept_dilationconv, self).__init__()
+        self.block2x2 = nn.Sequential(
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0, dilation = 1),
+            nn.ReLU(inplace = True),
+            # nn.MaxPool2d(kernel_size = 3, stride = 2),        
+        )
+        self.block3x3 = nn.Sequential(
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 4, padding = 1, dilation = 2),
+            nn.ReLU(inplace = True),
+            # nn.MaxPool2d(kernel_size = 4, stride = 2), 
+        )
+        self.block5x5 = nn.Sequential(
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 8, padding = 2, dilation = 4),
+            nn.ReLU(inplace = True),
+            # nn.MaxPool2d(kernel_size = 8, stride = 2), 
+        )
+
+        self.avgpool = nn.AdaptiveAvgPool2d((6,6))
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(12*6*6, 150),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(150, 50),
+            nn.ReLU(inplace=True),
+            nn.Linear(50, 2),
+        )
+
+    def forward(self, x, device):
+        x2 = self.block2x2(x)
+        x3 = self.block3x3(x)
+        x5 = self.block5x5(x)
+
         x = utils.tensor_cat(x2,x3,x5, padding = False)
 
         x = self.avgpool(x)

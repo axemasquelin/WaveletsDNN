@@ -128,13 +128,13 @@ if __name__ == '__main__':
 
     # Network Parameters
     models = [
-            # 'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
-            # 'Wave2',   # Multi Level Wavelet Decomposition
-            # 'Wave3',   # Multi Level Wavelet Decomposition
-            # 'Wave4',   # Multi Level Wavelet Decomposition
-            # 'Wave5',   # Multi Level Wavelet Decomposition
-            # 'Wave6',   # Multi Level Wavelet Decomposition
-            # 'Conv1',   # Convolutional Layer 4 Feature Extracted
+            'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
+            'Wave2',   # Multi Level Wavelet Decomposition
+            'Wave3',   # Multi Level Wavelet Decomposition
+            'Wave4',   # Multi Level Wavelet Decomposition
+            'Wave5',   # Multi Level Wavelet Decomposition
+            'Wave6',   # Multi Level Wavelet Decomposition
+            'Conv1',   # Convolutional Layer 4 Feature Extracted
             'Conv3',   # Multiscale Convolutional Module.
             ]
 
