@@ -190,7 +190,7 @@ class Conv_1 (nn.Module):
         
         super(Conv_1, self).__init__()
         self.features = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1),
+            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 1),
             nn.ReLU(inplace = True),
             nn.MaxPool2d(kernel_size = 3, stride = 2),
         )

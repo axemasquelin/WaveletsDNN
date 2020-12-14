@@ -128,13 +128,13 @@ if __name__ == '__main__':
 
     # Network Parameters
     models = [
-            'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
-            'Wave2',   # Multi Level Wavelet Decomposition
-            'Wave3',   # Multi Level Wavelet Decomposition
-            'Wave4',   # Multi Level Wavelet Decomposition
-            'Wave5',   # Multi Level Wavelet Decomposition
-            'Wave6',   # Multi Level Wavelet Decomposition
-            'Conv1',   # Convolutional Layer 4 Feature Extracted
+            # 'Wave1',   # Single Level Wavelet Decomposition Layer extracting 4 features
+            # 'Wave2',   # Multi Level Wavelet Decomposition
+            # 'Wave3',   # Multi Level Wavelet Decomposition
+            # 'Wave4',   # Multi Level Wavelet Decomposition
+            # 'Wave5',   # Multi Level Wavelet Decomposition
+            # 'Wave6',   # Multi Level Wavelet Decomposition
+            # 'Conv1',   # Convolutional Layer 4 Feature Extracted
             'Conv3',   # Multiscale Convolutional Module.
             ]
 
@@ -275,7 +275,7 @@ if __name__ == '__main__':
             alpha=.2, label=r'$\pm$ std.'
             )
         savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageLoss.png'
-        plt.savefig(savepath, dpi = 100)
+        plt.savefig(savepath, dpi = 600)
 
         #Validation Loss
         mean_losses, loss_upper, loss_lower = utils.calcLoss_stats(valloss, model, static_fig, fig, plot_loss = True, plot_static= True)
@@ -302,7 +302,7 @@ if __name__ == '__main__':
             alpha=.2, label=r'$\pm$ std.'
             )
         savepath = os.path.split(os.getcwd())[0] + '/results/AllApproaches_AverageValidationLoss.png'
-        plt.savefig(savepath, dpi = 100)
+        plt.savefig(savepath, dpi = 600)
         
         utils.csv_save(model, train_time, name = 'time')
         utils.csv_save(model, sensitivity, name = 'sensitivity')

@@ -134,7 +134,7 @@ def plot_losses(fig, trainLoss, validLoss, mode):
     plt.legend(['Training','Validation'], loc = 'top right')
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
-    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_Loss.png', dpi = 100)
+    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_Loss.png', dpi = 600)
     plt.close()
 
 
@@ -149,7 +149,7 @@ def plot_accuracies(fig, trainAcc, validAcc, mode):
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)
     
-    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_Accuracies.png', dpi = 100)
+    plt.savefig(os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_Accuracies.png', dpi = 600)
     plt.close()
 
 
@@ -183,7 +183,7 @@ def plot_roc_curve(tprs, mean_fpr, mean_tpr, mean_auc, std_auc, reps, mode):
     plt.title('ROC Curve for ' + str(mode), fontsize=16)
     plt.legend(loc="lower right", fontsize=14)
     savepath = os.path.split(os.getcwd())[0] + '/results/' + str(mode) + '/' + str(mode) + '_ROC.png'
-    plt.savefig(savepath, dpi=100)
+    plt.savefig(savepath, dpi=600)
     plt.close()
 
 
@@ -225,7 +225,7 @@ def plot_confusion_matrix(cm, classes, r, model,
         plt.xlabel('Predicted label')
         plt.tight_layout()
         savepath = os.path.split(os.getcwd())[0] + '/results/' + str(model) + '/' + str(model) + "_best_model.png"
-        plt.savefig(savepath)
+        plt.savefig(savepath, dpi = 600)
         plt.close()
   
 

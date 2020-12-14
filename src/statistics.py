@@ -106,7 +106,7 @@ def violin_plots(df, metric, methods, sig_sl = None, sig_ml = None, sig_wl = Non
         y, h, col = .961, .003, 'k'
         annotatefig(sig_cl[1][0], x1, x2, y, h)
     
-    plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png")
+    plt.savefig(os.path.split(os.getcwd())[0] + "/results/" + metric + "_Across_Methods.png", dpi = 600)
 
 if __name__ == '__main__':
     """
