@@ -221,20 +221,20 @@ class incept_conv(nn.Module):
         
         super(incept_conv, self).__init__()
         self.block2x2 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0, dilation = 1),
-            # nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1, dilation = 1),
+            # nn.Conv2d(1, 4, kernel_size= 2, stride= 2, padding = 0, dilation = 1),
+            nn.Conv2d(1, 4, kernel_size= 3, stride= 2, padding = 1, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 3, stride = 2),        
         )
         self.block3x3 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 4, stride= 4, padding = 2, dilation = 2),
-            # nn.Conv2d(1, 4, kernel_size= 5, stride= 2, padding = 2, dilation = 1),
+            # nn.Conv2d(1, 4, kernel_size= 4, stride= 4, padding = 2, dilation = 2),
+            nn.Conv2d(1, 4, kernel_size= 5, stride= 2, padding = 2, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 4, stride = 2), 
         )
         self.block5x5 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size= 8, stride= 8, padding = 8, dilation = 3),
-            # nn.Conv2d(1, 4, kernel_size= 7, stride= 2, padding = 3, dilation = 1),
+            # nn.Conv2d(1, 4, kernel_size= 8, stride= 8, padding = 8, dilation = 3),
+            nn.Conv2d(1, 4, kernel_size= 7, stride= 2, padding = 3, dilation = 1),
             nn.ReLU(inplace = True),
             # nn.MaxPool2d(kernel_size = 8, stride = 2), 
         )

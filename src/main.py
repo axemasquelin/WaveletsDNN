@@ -90,7 +90,11 @@ def net_select(model):
     elif (model == "Conv3"):
         net = incept_conv()
         net.apply(utils.init_weights)
-
+    
+    elif (model == "Conv3_d"):
+        net = incept_dilationconv()
+        net.apply(utils.init_weights)
+    
     elif (model == "Wave1"):
         net = Wave_1()
         net.apply(utils.init_weights)
@@ -135,7 +139,8 @@ if __name__ == '__main__':
             # 'Wave5',   # Multi Level Wavelet Decomposition
             # 'Wave6',   # Multi Level Wavelet Decomposition
             # 'Conv1',   # Convolutional Layer 4 Feature Extracted
-            'Conv3',   # Multiscale Convolutional Module.
+            'Conv3',     # Multiscale Convolutional Module.
+            'Conv3_d',   # Multiscale Dilation Module
             ]
 
     wkernel = [

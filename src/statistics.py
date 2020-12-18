@@ -125,6 +125,7 @@ if __name__ == '__main__':
             'Wave6',                # Multi level Wavelet Decomposition Layer extracting 4 features
             'Conv1',                # Convolutional Layer 4 Feature Extracted
             'Conv3',
+            'Conv3_d',
             ]
 
     metrics = [                    # Select Metric to Evaluate
